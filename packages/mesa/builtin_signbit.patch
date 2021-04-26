@@ -1,0 +1,11 @@
+--- src/mesa/main/macros.h      2020-10-14 13:19:10.769852900 -0400
++++ src/mesa/main/macros.h      2020-11-20 02:11:13.838887550 -0500
+@@ -771,7 +771,7 @@
+ #pragma warning( push )
+ #pragma warning( disable : 6334 ) /* sizeof operator applied to an expression with an operator may yield unexpected results */
+ #endif
+-   return signbit(x) != signbit(y);
++   return __builtin_signbit(x) != __builtin_signbit(y);
+ #ifdef _MSC_VER
+ #pragma warning( pop )
+ #endif
