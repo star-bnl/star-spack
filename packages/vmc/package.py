@@ -21,4 +21,4 @@ class Vmc(CMakePackage):
 
     patch('dict_fixes_101.patch', when='@1-0-p1')
 
-    depends_on('root@6.18.04: ~vmc')
+    depends_on('root +vmc', when='@1-0-p3 %gcc@4.8.5')
