@@ -1,0 +1,15 @@
+# This is a Spack Environment file.
+#
+# It describes a set of packages to be installed, along with
+# configuration settings.
+spack:
+  # add package specs to the `specs` list
+  specs:
+    - python@2.7.18
+    - python@3.8.9
+    - log4cxx
+    - vc@1.4.1
+    - llvm@7.1.0 ^binutils+plugins
+    - mesa@20.2.1 ^llvm@7.1.0 ^binutils+plugins
+    - root@6.16.00+vc+fftw+mlp+mysql+pythia6+roofit+table+tmva+vdt~vmc ^binutils+plugins ^llvm@:7.1.0 ^mesa@20.2.1 ^mysql@5.7.27 ^openblas@0.3.10
+  view: true
