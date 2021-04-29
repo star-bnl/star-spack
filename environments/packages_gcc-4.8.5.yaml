@@ -9,6 +9,8 @@ packages:
   ftgl: {}
   mesa:
     version: [20.2.1]
+  boost:
+    version: [1.59.0]
   llvm:
     version: [7.1.0]
   mysql:
