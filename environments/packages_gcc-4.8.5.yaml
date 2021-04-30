@@ -1,0 +1,36 @@
+packages:
+  python:
+    version: [3.8.9, 2.7.18]
+  log4cxx:
+    version: [0.10.0]
+  binutils:
+    version: [2.36.1]
+    variants: +plugins
+  ftgl: {}
+  mesa:
+    version: [20.2.1]
+  llvm:
+    version: [7.1.0]
+  mysql:
+    version: [5.7.27]
+  openblas: 
+    version: [0.3.10]
+  root:
+    version: [6.24.00, 6.16.00]
+    variants: +vc +fftw +mlp +mysql +pythia6 +roofit +tmva +vdt +vmc
+  star-table:
+    version: [main]
+  geant4:
+    version: [10.4.0]
+  vmc:
+    version: [1-0-p3]
+  geant4-vmc:
+    version: [4-0-p3]
+  genfit:
+    version: [02-00-00]
+  kitrack:
+    version: [01-10-star-1]
+  kfparticle:
+    version: [1.1]
+  all:
+    compiler: [gcc@4.8.5]
