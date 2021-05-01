@@ -216,6 +216,9 @@ class Openblas(MakefilePackage):
                 arch_name = openblas_arch_map.get(arch_name, arch_name)
                 args.append('ARCH=' + arch_name)
 
+        if self.spec.target == 'x86':
+            args.append('FEXTRALIB=-L/usr/lib')
+
         if microarch.vendor == 'generic':
             # User requested a generic platform, or we couldn't find a good
             # match for the requested one. Allow OpenBLAS to determine
