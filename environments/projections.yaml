@@ -1,0 +1,22 @@
+# spack view --dependencies no -v symlink --projection-file star-spack/environments/projections.yaml /cvmfs/star.sdcc.bnl.gov/opt \
+#   boost cmake eigen fastjet geant4 geant4-vmc genfit gsl kfparticle kitrack lhapdf log4cxx perl python root star-table vc
+
+projections:
+  boost:      '{os}-{target}/{compiler.name}-{compiler.version}'
+  cmake:      '{os}-{target}/{compiler.name}-{compiler.version}'
+  eigen:      '{os}-{target}/{compiler.name}-{compiler.version}'
+  fastjet:    '{os}-{target}/{compiler.name}-{compiler.version}'
+  gsl:        '{os}-{target}/{compiler.name}-{compiler.version}'
+  lhapdf:     '{os}-{target}/{compiler.name}-{compiler.version}'
+  log4cxx:    '{os}-{target}/{compiler.name}-{compiler.version}'
+  perl:       '{os}-{target}/{compiler.name}-{compiler.version}'
+  # geant4
+  # geant4-vmc
+  # genfit
+  # kfparticle
+  # kitrack
+  # python
+  # root
+  # star-table
+  # vc
+  all:        '{os}-{target}/{compiler.name}-{compiler.version}/{name}-{version}'
