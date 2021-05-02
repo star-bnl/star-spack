@@ -26,3 +26,9 @@ class MesaGlu(AutotoolsPackage):
                                   shared=True, recursive=False)
             if libs:
                 return libs
+
+    def configure_args(self):
+        if self.spec.target == 'x86':
+            return ['CFLAGS=-m32', 'CPPFLAGS=-m32', 'CXXFLAGS=-m32', 'LDFLAGS=-m32']
+
+        return []
