@@ -613,6 +613,9 @@ class Openmpi(AutotoolsPackage):
             '--disable-silent-rules'
         ]
 
+        if self.spec.target == 'x86':
+            config_args.extend(['CFLAGS=-m32', 'CPPFLAGS=-m32', 'CXXFLAGS=-m32', 'FCFLAGS=-m32', 'LDFLAGS=-m32', '--without-treematch'])
+
         # All rpath flags should be appended with self.compiler.cc_rpath_arg.
         # Later, we might need to update share/openmpi/mpic++-wrapper-data.txt
         # and mpifort-wrapper-data.txt (see filter_rpaths()).
