@@ -195,6 +195,9 @@ class IntelTbb(Package):
             make_opts.append('stdver=c++{0}'.
                              format(spec.variants['cxxstd'].value))
 
+        if self.spec.target == 'x86':
+            make_opts.append('arch=ia32')
+
         #
         # tbb does not have a configure script or make install target
         # we simply call make, and try to put the pieces together
