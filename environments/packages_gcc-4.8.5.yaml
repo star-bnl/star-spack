@@ -19,7 +19,7 @@ packages:
     version: [0.3.10]
   root:
     version: [6.24.00, 6.16.00]
-    variants: +vc +fftw +mlp +mysql +pythia6 +roofit +tmva +vdt +vmc
+    variants: +vc +fftw +mlp +mysql +pythia6 +roofit +tmva +vdt +vmc +spectrum
   star-table:
     version: [main]
   geant4:
