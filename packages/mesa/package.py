@@ -92,6 +92,8 @@ class Mesa(MesonPackage):
     # OpenGL ES requires OpenGL
     conflicts('~opengl +opengles')
 
+    patch('builtin_signbit.patch', level=0, when='%gcc@4.8.5')
+
     # 'auto' needed when shared llvm is built
     @when('^llvm~shared_libs')
     def patch(self):
