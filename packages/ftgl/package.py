@@ -35,6 +35,8 @@ class Ftgl(CMakePackage):
         args = ['-DBUILD_SHARED_LIBS={0}'.format(spec.satisfies('+shared'))]
         if 'darwin' in self.spec.architecture:
             args.append('-DCMAKE_MACOSX_RPATH=ON')
+        if spec.satisfies('%gcc@:4.8.5'):
+            args.append('-DCMAKE_CXX_STANDARD=11')
         return args
 
     # FIXME: See doc variant comment
