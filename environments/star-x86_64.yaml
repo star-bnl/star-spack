@@ -22,18 +22,4 @@ spack:
   packages:
     all:
       target: [x86_64]
-  view:
-    default:
-      root: /cvmfs/star.sdcc.bnl.gov/opt
-      projections:
-        all        : '{os}-{target}/{compiler.name}-{compiler.version}'
-        geant4     : '{os}-{target}/{compiler.name}-{compiler.version}/{name}-{version}'
-        geant4-vmc : '{os}-{target}/{compiler.name}-{compiler.version}/{name}-{version}'
-        genfit     : '{os}-{target}/{compiler.name}-{compiler.version}/{name}-{version}'
-        kfparticle : '{os}-{target}/{compiler.name}-{compiler.version}/{name}-{version}'
-        kitrack    : '{os}-{target}/{compiler.name}-{compiler.version}/{name}-{version}'
-        python     : '{os}-{target}/{compiler.name}-{compiler.version}/{name}-{version}'
-        root       : '{os}-{target}/{compiler.name}-{compiler.version}/{name}-{version}'
-        star-table : '{os}-{target}/{compiler.name}-{compiler.version}/root-6.24.00'
-        vc         : '{os}-{target}/{compiler.name}-{compiler.version}/{name}-{version}'
-      select: [boost, cmake, eigen, fastjet, geant4, geant4-vmc, genfit, gsl, kfparticle, kitrack, lhapdf, log4cxx, perl, python, root, star-table, vc]
+  view: false
