@@ -3,6 +3,8 @@ packages:
     version: [3.8.9, 2.7.18]
   log4cxx:
     version: [0.10.0]
+  eigen:
+    version: [3.3.9]
   binutils:
     version: [2.36.1]
     variants: +plugins
