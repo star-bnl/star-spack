@@ -118,6 +118,10 @@ class Openssl(Package):   # Uses Fake Autotools, should subclass Package
            'aarch64' in spack.architecture.sys_type():
             options.append('no-asm')
 
+        if self.spec.target == 'x86':
+            env['MACHINE'] = '386'
+            options.append('386')
+
         # The default glibc provided by CentOS 7 does not provide proper
         # atomic support when using the NVIDIA compilers
         if self.spec.satisfies('%nvhpc os=centos7'):

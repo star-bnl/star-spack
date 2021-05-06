@@ -27,4 +27,7 @@ class Log4cxx(AutotoolsPackage):
     def configure_args(self):
         args = ['--disable-static']
 
+        if self.spec.target == 'x86':
+            args.extend(['--build=i686', 'LDFLAGS=-m32'])
+
         return args

@@ -51,6 +51,9 @@ class BerkeleyDb(AutotoolsPackage):
             '--with-repmgr-ssl=no',
         ]
 
+        if self.spec.target == 'x86':
+            config_args.append('--build=i686')
+
         config_args += self.enable_or_disable('cxx')
         config_args += self.enable_or_disable('stl')
 

@@ -24,3 +24,8 @@ class Glew(CMakePackage):
         # https://github.com/Homebrew/legacy-homebrew/issues/22025
         # Note: This file is generated only after cmake is run
         filter_file(r'Requires: glu', '', 'glew.pc')
+
+    @run_after('install')
+    def patch_cmake(self):
+        if self.spec.target == 'x86':
+            filter_file(r'lib64/libGLU', 'lib/libGLU', self.spec.prefix + '/lib64/cmake/glew/glew-targets.cmake')

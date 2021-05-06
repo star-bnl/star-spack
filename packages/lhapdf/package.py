@@ -31,4 +31,8 @@ class Lhapdf(AutotoolsPackage):
 
     def configure_args(self):
         args = ['FCFLAGS=-O3', 'CFLAGS=-O3', 'CXXFLAGS=-O3']
+
+        if self.spec.target == 'x86':
+            args = ['--build=i686', 'CFLAGS=-m32', 'CPPFLAGS=-m32', 'CXXFLAGS=-m32', 'FCFLAGS=-m32', 'LDFLAGS=-m32', '--disable-python']
+
         return args

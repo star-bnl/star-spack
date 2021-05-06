@@ -29,3 +29,8 @@ class Libtiff(AutotoolsPackage):
         if self.spec.satisfies('%nvhpc@:20.11'):
             filter_file('vl_cv_prog_cc_warnings="-Wall -W"',
                         'vl_cv_prog_cc_warnings="-Wall"', 'configure')
+
+    def configure_args(self):
+        if self.spec.target == 'x86':
+            return ['CFLAGS=-m32', 'CPPFLAGS=-m32', 'CXXFLAGS=-m32', 'LDFLAGS=-m32']
+        return []

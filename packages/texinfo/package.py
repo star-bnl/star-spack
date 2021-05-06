@@ -47,3 +47,8 @@ class Texinfo(AutotoolsPackage, GNUMirrorPackage):
         output = Executable(exe)('--version', output=str, error=str)
         match = re.search(r'info \(GNU texinfo\)\s+(\S+)', output)
         return match.group(1) if match else None
+
+    def configure_args(self):
+        if self.spec.target == 'x86':
+            return ['--build=i686']
+        return []

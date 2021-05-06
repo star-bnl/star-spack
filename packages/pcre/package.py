@@ -48,4 +48,7 @@ class Pcre(AutotoolsPackage):
             args.append('--enable-utf')
             args.append('--enable-unicode-properties')
 
+        if self.spec.target == 'x86':
+            args.append('--build=i686')
+
         return args
