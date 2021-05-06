@@ -11,4 +11,9 @@ class StarTable(CMakePackage):
     version('main', branch='main')
 
     depends_on('cmake@3.6:', type='build')
-    depends_on('root@6.18:')
+    depends_on('root')
+
+    def cmake_args(self):
+        args = []
+        args.append(self.define('CMAKE_CXX_STANDARD', self.spec['root'].variants['cxxstd'].value))
+        return args
