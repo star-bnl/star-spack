@@ -58,6 +58,8 @@ class Fastjet(AutotoolsPackage):
 
     def configure_args(self):
         extra_args = ["--enable-allplugins"]
+        if self.spec.target == 'x86':
+            extra_args.extend(['--build=i686', 'LDFLAGS=-m32'])
         extra_args += self.enable_or_disable('shared')
         extra_args += self.enable_or_disable('auto-ptr')
 
