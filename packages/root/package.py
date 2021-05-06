@@ -195,6 +195,8 @@ class Root(CMakePackage):
     depends_on('jpeg')
     depends_on('libice')
     depends_on('libpng')
+    depends_on('giflib')
+    depends_on('libtiff')
     depends_on('lz4', when='@6.13.02:')  # See cmake_args, below.
     depends_on('ncurses')
     depends_on('nlohmann-json', when='@6.24:')
@@ -338,7 +340,7 @@ class Root(CMakePackage):
             define('builtin_llvm', True),
             define('builtin_lz4', self.spec.satisfies('@6.12.02:6.12.99')),
             define('builtin_lzma', False),
-            define('builtin_nlohmannjson', False),
+            define('builtin_nlohmannjson', True),
             define('builtin_openssl', False),
             define('builtin_pcre', False),
             define('builtin_tbb', False),
@@ -459,6 +461,10 @@ class Root(CMakePackage):
             # See https://github.com/spack/spack/pull/11579
             options.append(define('PYTHON_EXECUTABLE',
                                   spec['python'].command.path))
+
+        options.append(define('TIFF_INCLUDE_DIR', spec['libtiff'].prefix.include))
+        options.append(define('TIFF_LIBRARY', spec['libtiff'].libs.joined(';')))
+        options.append(define('GIF_DIR', spec['giflib'].prefix))
 
         return options
 
