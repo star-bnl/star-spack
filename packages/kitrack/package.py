@@ -5,7 +5,8 @@ class Kitrack(CMakePackage):
        automaton and a Hopfield neural network for charged particle tracking"""
 
     homepage = "https://github.com/star-bnl/KiTrack"
-    url      = "https://github.com/star-bnl/KiTrack/archive/master.tar.gz"
+    git      = "https://github.com/star-bnl/KiTrack"
+    url      = "https://github.com/star-bnl/KiTrack/archive/refs/tags/v01-10-star-1.tar.gz"
 
     version('01-10-star-1', sha256='eab327bdfb839105272305a13c47a4ae2f120017ccefde0a88e2c0807ec550cf')
 
