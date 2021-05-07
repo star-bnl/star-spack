@@ -27,6 +27,12 @@ class Genfit(CMakePackage):
     depends_on('root@:6.16.00', when='@b496504a')
     depends_on('eigen')
 
+    @run_before('cmake')
+    def patch_cmake(self):
+        if self.spec.target == 'x86':
+            filter_file(r'set\(CMAKE_CXX_FLAGS', '#set\(CMAKE_CXX_FLAGS', 'CMakeLists.txt')
+            filter_file(r'SET \(CMAKE_CXX_FLAGS', '#SET \(CMAKE_CXX_FLAGS', 'CMakeLists.txt')
+
     def cmake_args(self):
         args = []
         # normally, as a cmake package root should be
@@ -36,5 +42,7 @@ class Genfit(CMakePackage):
         # so this workaround is needed for now.
         root_prefix = self.spec["root"].prefix
         args.append('-DROOT_DIR=%s' % root_prefix)
+
+        args.append(self.define('CMAKE_CXX_STANDARD', self.spec['root'].variants['cxxstd'].value))
 
         return args
