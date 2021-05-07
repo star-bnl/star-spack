@@ -27,8 +27,6 @@ class Lhapdf(AutotoolsPackage):
     depends_on('py-cython',     type='build')
     depends_on('py-setuptools', type='build')
 
-    extends('python')
-
     def configure_args(self):
         args = ['FCFLAGS=-O3', 'CFLAGS=-O3', 'CXXFLAGS=-O3']
 
