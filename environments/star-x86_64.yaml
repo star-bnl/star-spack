@@ -7,7 +7,7 @@ spack:
     - $spack/../environments/packages_gcc-4.8.5.yaml
   specs:
     - gcc@10.2.0
-    - star.mesa
+    - mesa
     - root@6.24.00
     - star-table
     - geant4
