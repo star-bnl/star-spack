@@ -14,6 +14,9 @@ class StarEnvRoot6(BundlePackage):
     depends_on('star-table')
 
     def setup_run_environment(self, env):
+        # Set env variable used by STAR cons
+        env.set('USE_64BITS', '0' if self.spec.target == 'x86' else '1')
+
         env.append_path('CPATH', self.spec['genfit'].prefix.include)
         env.append_path('CPATH', self.spec['kfparticle'].prefix.include)
         env.append_path('CPATH', self.spec['kitrack'].prefix.include)
