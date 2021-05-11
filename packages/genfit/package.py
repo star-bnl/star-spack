@@ -44,5 +44,6 @@ class Genfit(CMakePackage):
         args.append('-DROOT_DIR=%s' % root_prefix)
 
         args.append(self.define('CMAKE_CXX_STANDARD', self.spec['root'].variants['cxxstd'].value))
+        args.append(self.define('CMAKE_INSTALL_INCLUDEDIR', 'include/GenFit'))
 
         return args
