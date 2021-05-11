@@ -10,6 +10,7 @@ spack:
     - mesa
     - root@6.24.00
     - star-table
+    - star-env-root6
     - geant4
     - geant4-vmc
     - kitrack
