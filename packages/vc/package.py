@@ -16,6 +16,7 @@ class Vc(CMakePackage):
     version('1.3.0', sha256='2309a19eea136e1f9d5629305b2686e226093e23fe5b27de3d6e3d6084991c3a')
     version('1.2.0', sha256='9cd7b6363bf40a89e8b1d2b39044b44a4ce3f1fd6672ef3fc45004198ba28a2b')
     version('1.1.0', sha256='281b4c6152fbda11a4b313a0a0ca18565ee049a86f35f672f1383967fef8f501')
+    version('0.7.4', sha256='6dd8ce901491db6b71c77b2b7464137f6fdfa311b7b6f0e21b1d00e932c3c3db')
 
     variant('build_type', default='RelWithDebInfo',
             description='The build type to build',
