@@ -296,6 +296,11 @@ class Root(CMakePackage):
         conflicts('+' + pkg, when='@6.18.00:',
                   msg='Obsolete option +{0} selected.'.format(pkg))
 
+    @run_before('cmake')
+    def patch_cmake(self):
+        if self.spec.target == 'x86':
+            filter_file(r'set\(ROOT_PLATFORM linux\)', 'set(ROOT_PLATFORM linux)\nset(CMAKE_SYSTEM_PROCESSOR i686)', 'cmake/modules/SetUpLinux.cmake')
+
     def cmake_args(self):
         spec = self.spec
         define = self.define
