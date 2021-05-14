@@ -299,7 +299,12 @@ class Root(CMakePackage):
     @run_before('cmake')
     def patch_cmake(self):
         if self.spec.target == 'x86':
-            filter_file(r'set\(ROOT_PLATFORM linux\)', 'set(ROOT_PLATFORM linux)\nset(CMAKE_SYSTEM_PROCESSOR i686)', 'cmake/modules/SetUpLinux.cmake')
+            # The applicability of the patch for different versions has been
+            # verified only for 6.16.00 and 6.24.00
+            if self.spec.version > Version('6.16.00'):
+                filter_file(r'set\(ROOT_PLATFORM linux\)', 'set(ROOT_PLATFORM linux)\nset(CMAKE_SYSTEM_PROCESSOR i686)', 'cmake/modules/SetUpLinux.cmake')
+            else:
+                filter_file(r'execute_process\(COMMAND uname -m OUTPUT_VARIABLE SYSCTL_OUTPUT\)', 'set(SYSCTL_OUTPUT i686)', 'cmake/modules/SetUpLinux.cmake')
 
     def cmake_args(self):
         spec = self.spec
