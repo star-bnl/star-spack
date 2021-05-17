@@ -57,15 +57,18 @@ class Root(CMakePackage):
     version('6.06.04', sha256='ab86dcc80cbd8e704099af0789e23f49469932ac4936d2291602301a7aa8795b')
     version('6.06.02', sha256='18a4ce42ee19e1a810d5351f74ec9550e6e422b13b5c58e0c3db740cdbc569d1')
 
+    # ROOT5 versions
+    version('5.34.38', sha256='2c3bda69601d94836bdd88283a6585b4774eafc813deb6aa348df0af2922c4d2')
+
     # ###################### Patches ##########################
 
     # Widely used patch (CMS, FNAL) to increase the size of static
     # buffers used to improve the operation of TString.
-    patch('format-stringbuf-size.patch', level=0)
+    patch('format-stringbuf-size.patch', level=0, when='@6.00.00:')
     # Support use of `mariadb-c-client` and `mariadb` to provide the
     # MySQL API _cf_
     # https://github.com/root-project/root/commit/9c0fa8c554a569c971185249f9acfff4418c0c13.
-    patch('find-mysql.patch', level=1, when='@:6.16.00')
+    patch('find-mysql.patch', level=1, when='@6.00.00:6.16.00')
     # Some ROOT versions did not honor the option to avoid building an
     # internal version of unuran, _cf_
     # https://github.com/root-project/ROOT/commit/3e60764f133218b6938e5aa4986de760e8f058d9.
@@ -375,7 +378,7 @@ class Root(CMakePackage):
             define('castor', False),
             define('ccache', False),
             define('chirp', False),
-            define('cling', True),
+            define('cling', self.spec.satisfies('@6.00.00:')),
             define_from_variant('cocoa', 'aqua'),
             define('dataframe', True),
             define_from_variant('davix'),
