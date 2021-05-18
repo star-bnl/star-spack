@@ -75,6 +75,10 @@ done < <(spack repo list)
 
 if [ "$_st_sp_repo_found" = false ]; then spack repo add "$_STAR_SPACK_ROOT"; fi
 
+# Update MODULEPATH
+_sp_compatible_sys_types=${_sp_compatible_sys_types//x86_64/x86}
+_sp_multi_pathadd MODULEPATH "$_sp_tcl_roots"
+
 # done: unset sentinel variable as we're no longer initializing
 unset _st_sp_initializing
 export _st_sp_initializing
