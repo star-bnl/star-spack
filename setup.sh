@@ -62,11 +62,12 @@ _STAR_SPACK_ROOT="$(cd "$(dirname $_sp_source_file)" > /dev/null && pwd)"
 
 source "$_STAR_SPACK_ROOT/spack/share/spack/setup-env.sh"
 
+# Check whether STAR repo is known to the user environment and if not, add STAR repo
 _st_sp_repo_found=false
 _st_sp_repo_pattern='^star(.*)'$_STAR_SPACK_ROOT'$'
 
-while read -r myeee ; do
-    if [[ "$myeee" =~ $_st_sp_repo_pattern ]]; 
+while read -r _st_sp_repo_line ; do
+    if [[ "$_st_sp_repo_line" =~ $_st_sp_repo_pattern ]];
     then 
         _st_sp_repo_found=true
     fi
