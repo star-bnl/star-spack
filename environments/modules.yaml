@@ -35,6 +35,9 @@ modules:
       - CMAKE_PREFIX_PATH
     include:
       - CPATH
+  tcl:
+    projections:
+      star-env: '{name}-{^root.name}-{^root.version}-{compiler.name}-{compiler.version}'
   lmod:
     hierarchy:
       - mpi
