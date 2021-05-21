@@ -5,6 +5,7 @@
 spack:
   include:
     - $spack/../environments/packages_gcc-4.8.5.yaml
+    - $spack/../environments/modules.yaml
   specs:
     - gcc@10.2.0
     - mesa
