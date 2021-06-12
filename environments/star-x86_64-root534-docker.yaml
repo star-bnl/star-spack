@@ -11,6 +11,9 @@ spack:
     - genfit@b496504a
     - kfparticle
     - star-env
+    - star-table
+    - mysql cxxstd=11
+    - eigen
   concretization: together
   packages:
     python:
@@ -53,4 +56,11 @@ spack:
     all:
       compiler: [gcc@4.8.5]
       target: [x86_64]
-  view: false
+  view:
+    default:
+      root: /opt/view
+      projections:
+        all: '{name}-{version}-{hash}'
+  config:
+    install_tree:
+      root: /opt/software
