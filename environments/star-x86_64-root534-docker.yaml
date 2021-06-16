@@ -6,12 +6,11 @@ spack:
   specs:
     - mesa
     - log4cxx
-    - root@5.34.38 ~python
+    - root@5.34.38 +table ~python
     - kitrack
     - genfit@b496504a
     - kfparticle
     - star-env
-    - star-table
     - mysql cxxstd=11
     - eigen
   concretization: together
