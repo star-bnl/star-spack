@@ -1,0 +1,30 @@
+# This is a Spack Environment file.
+#
+# It describes a set of packages to be installed, along with
+# configuration settings.
+spack:
+  include:
+    - $spack/../environments/packages_gcc-4.8.5.yaml
+    - $spack/../environments/modules.yaml
+  specs:
+    - eigen
+    - genfit@b496504a
+    - kfparticle
+    - kitrack
+    - log4cxx
+    - mesa
+    - mysql cxxstd=11
+    - root@6.16.00 +table
+    - star-env
+  concretization: together
+  packages:
+    all:
+      target: [x86_64]
+  view:
+    default:
+      root: /opt/view
+      projections:
+        all: '{name}-{version}-{hash}'
+  config:
+    install_tree:
+      root: /opt/software
