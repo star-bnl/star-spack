@@ -21,6 +21,8 @@ spack:
     - mysql cxxstd=11
     - root@6.16.00 +table
     - star-env
+    - vc@1.4.1
+    - vc_@0.7.4
   concretization: together
   packages:
     all:
