@@ -18,8 +18,8 @@ spack:
     - mysql cxxstd=11
     - root@5.34.38 ~python +table
     - star-env
-    - vc@0.7.4
     - vc_@1.4.1
+    - vc@0.7.4
   concretization: together
   packages:
     all:
