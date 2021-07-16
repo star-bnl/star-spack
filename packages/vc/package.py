@@ -31,4 +31,4 @@ class Vc(CMakePackage):
 
     def setup_run_environment(self, env):
         # Set env variable used by STAR cons
-        env.set('Vc_LIB_DIR', self.spec.prefix.lib)
+        env.set('Vc_DIR', self.spec.prefix)
