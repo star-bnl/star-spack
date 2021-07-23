@@ -13,6 +13,7 @@ class StarEnv(BundlePackage):
     depends_on('kitrack')
     depends_on('log4cxx')
     depends_on('root')
+    depends_on('vc')
     depends_on('star-table', when='^root@6.18.00:')
 
     def setup_run_environment(self, env):
@@ -24,5 +25,7 @@ class StarEnv(BundlePackage):
         env.append_path('CPATH', self.spec['kitrack'].prefix.include)
         env.append_path('CPATH', self.spec['log4cxx'].prefix.include)
         env.append_path('CPATH', self.spec['root'].prefix.include)
+        env.append_path('CPATH', self.spec['vc'].prefix.include)
+
         if self.spec['root'].satisfies('@6.18.00:'):
             env.append_path('CPATH', self.spec['star-table'].prefix.include)
