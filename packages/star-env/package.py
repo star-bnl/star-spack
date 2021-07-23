@@ -31,6 +31,8 @@ class StarEnv(BundlePackage):
         if self.spec['root'].satisfies('@6.18.00:'):
             env.append_path('CPATH', self.spec['star-table'].prefix.include)
 
+        env.prepend_path('LD_LIBRARY_PATH', self.spec['root'].prefix.lib)
+
         # Based on ROOT version pick default Vc from the two available options
         if self.spec['root'].satisfies('@6.16'):
             env.set('Vc_DIR', self.spec['vc_'].prefix)
