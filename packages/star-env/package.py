@@ -14,6 +14,7 @@ class StarEnv(BundlePackage):
     depends_on('log4cxx')
     depends_on('root')
     depends_on('vc')
+    depends_on('vc_')
     depends_on('star-table', when='^root@6.18.00:')
 
     def setup_run_environment(self, env):
@@ -29,3 +30,9 @@ class StarEnv(BundlePackage):
 
         if self.spec['root'].satisfies('@6.18.00:'):
             env.append_path('CPATH', self.spec['star-table'].prefix.include)
+
+        # Based on ROOT version pick default Vc from the two available options
+        if self.spec['root'].satisfies('@6.16'):
+            env.set('Vc_DIR', self.spec['vc_'].prefix)
+        else:
+            env.set('Vc_DIR', self.spec['vc'].prefix)
