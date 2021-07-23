@@ -33,6 +33,12 @@ class StarEnv(BundlePackage):
 
         env.prepend_path('LD_LIBRARY_PATH', self.spec['root'].prefix.lib)
 
+        # Add some ROOT dependencies to LD_LIBRARY_PATH. Missing RPATH?
+        env.append_path('LD_LIBRARY_PATH', self.spec['zlib'].prefix.lib)
+        env.append_path('LD_LIBRARY_PATH', self.spec['libiconv'].prefix.lib)
+        env.append_path('LD_LIBRARY_PATH', self.spec['libbsd'].prefix.lib)
+        env.append_path('LD_LIBRARY_PATH', self.spec['libmd'].prefix.lib)
+
         # Based on ROOT version pick default Vc from the two available options
         if self.spec['root'].satisfies('@6.16'):
             env.set('Vc_DIR', self.spec['vc_'].prefix)
