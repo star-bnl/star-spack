@@ -8,6 +8,7 @@ spack:
     - $spack/../environments/modules.yaml
   specs:
     - eigen
+    - fastjet
     - genfit@b496504a
     - kfparticle
     - kitrack
