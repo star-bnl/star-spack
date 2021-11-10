@@ -30,7 +30,10 @@ class StarEnv(BundlePackage):
 
         if self.spec['root'].satisfies('@6.18.00:'):
             env.append_path('CPATH', self.spec['star-table'].prefix.include)
+            env.prepend_path('LD_LIBRARY_PATH', self.spec['star-table'].prefix.lib)
 
+        # We prepend because the user's LD_LIBRARY_PATH may already include
+        # a path to some other ROOT directory
         env.prepend_path('LD_LIBRARY_PATH', self.spec['root'].prefix.lib)
 
         # Add some ROOT dependencies to LD_LIBRARY_PATH. Missing RPATH?
