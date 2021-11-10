@@ -5,10 +5,10 @@ class StarTable(CMakePackage):
     structures based on ROOT's TDataSet class"""
 
     homepage = "https://github.com/star-bnl/star-table"
-    git      = "https://github.com/star-bnl/star-table"
-    url      = "https://github.com/star-bnl/star-table/archive/main.tar.gz"
+    git      = "https://github.com/star-bnl/star-table.git"
+    url      = "https://github.com/star-bnl/star-table/archive/v0.1.0.tar.gz"
 
-    version('main', branch='main')
+    version('0.1.0', sha256='46a3f75076c48e3e04a48ffb2392d70aa250111feb9ae1c6580376d7a8441027')
 
     depends_on('cmake@3.6:', type='build')
     depends_on('root')

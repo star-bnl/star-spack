@@ -23,7 +23,7 @@ packages:
     version: [6.24.00, 6.16.00, 5.34.38]
     variants: +vc +fftw +mlp +mysql +pythia6 +roofit +tmva +vdt +vmc +spectrum
   star-table:
-    version: [main]
+    version: [0.1.0]
   geant4:
     version: [10.4.0]
   vmc:
