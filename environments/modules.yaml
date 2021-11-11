@@ -36,8 +36,10 @@ modules:
     include:
       - CPATH
   tcl:
+    hash_length: 0
     projections:
-      star-env: '{name}-{^root.name}-{^root.version}-{compiler.name}-{compiler.version}'
+      all: '{name}-{version}'
+      ^root: '{name}-{^root.name}-{^root.version}'
   lmod:
     hierarchy:
       - mpi
