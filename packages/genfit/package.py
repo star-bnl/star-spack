@@ -23,13 +23,20 @@ class Genfit(CMakePackage):
     # Untagged version from 2017-06-23 known to work with root@6.16.00
     version('b496504a', sha256='e1582b35782118ade08498adc03f3fda01979ff8bed61e0520edae46d7bfe477')
 
+    variant('rave', default=False, description='Build with rave')
+
     depends_on('root')
     depends_on('root@:6.16.00', when='@b496504a')
     depends_on('eigen')
+    depends_on('rave', when='+rave')
+
+    def setup_build_environment(self, env):
+        if '+rave' in self.spec:
+            env.set('RAVEPATH', self.spec["rave"].prefix + "/lib/pkgconfig")
 
     @run_before('cmake')
     def patch_cmake(self):
-        if self.spec.target == 'x86':
+        if self.spec.target == 'x86' and '+rave' not in self.spec:
             filter_file(r'set\(CMAKE_CXX_FLAGS', '#set\(CMAKE_CXX_FLAGS', 'CMakeLists.txt')
             filter_file(r'SET \(CMAKE_CXX_FLAGS', '#SET \(CMAKE_CXX_FLAGS', 'CMakeLists.txt')
 

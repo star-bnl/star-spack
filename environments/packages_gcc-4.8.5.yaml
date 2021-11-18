@@ -32,6 +32,7 @@ packages:
     version: [4-0-p3]
   genfit:
     version: [02-00-00]
+    variants: +rave
   kitrack:
     version: [01-10-star-1]
   kfparticle:
