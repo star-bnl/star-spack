@@ -12,6 +12,7 @@ class StarEnv(BundlePackage):
     depends_on('kfparticle')
     depends_on('kitrack')
     depends_on('log4cxx')
+    depends_on('rave')
     depends_on('root')
     depends_on('vc')
     depends_on('vc_')
@@ -25,6 +26,7 @@ class StarEnv(BundlePackage):
         env.append_path('CPATH', self.spec['kfparticle'].prefix.include)
         env.append_path('CPATH', self.spec['kitrack'].prefix.include)
         env.append_path('CPATH', self.spec['log4cxx'].prefix.include)
+        env.append_path('CPATH', self.spec['rave'].prefix.include)
         env.append_path('CPATH', self.spec['root'].prefix.include)
         env.append_path('CPATH', self.spec['vc'].prefix.include)
 
