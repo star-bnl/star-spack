@@ -105,6 +105,7 @@ spack:
     - intel-tbb                       target=x86 cflags="-m32" cppflags="-m32" cxxflags="-m32" fflags="-m32" ldflags="-m32"
     - giflib                          target=x86 cflags="-m32" cppflags="-m32" cxxflags="-m32" fflags="-m32" ldflags="-m32"
     - libtiff                         target=x86 cflags="-m32" cppflags="-m32" cxxflags="-m32" fflags="-m32" ldflags="-m32"
+    - rave                            target=x86 cflags="-m32" cppflags="-m32" cxxflags="-m32" fflags="-m32" ldflags="-m32"
     - root@5.34.38 +table ~python     target=x86 cflags="-m32" cppflags="-m32" cxxflags="-m32" fflags="-m32" ldflags="-m32"
     - genfit@b496504a                 target=x86 cflags="-m32" cppflags="-m32" cxxflags="-m32" fflags="-m32" ldflags="-m32"
     - kfparticle                      target=x86 cflags="-m32" cppflags="-m32" cxxflags="-m32" fflags="-m32" ldflags="-m32"
