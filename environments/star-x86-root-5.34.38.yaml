@@ -111,6 +111,8 @@ spack:
     - kfparticle                      target=x86 cflags="-m32" cppflags="-m32" cxxflags="-m32" fflags="-m32" ldflags="-m32"
     - kitrack                         target=x86 cflags="-m32" cppflags="-m32" cxxflags="-m32" fflags="-m32" ldflags="-m32"
     - star-env                        target=x86
+    - vc_@1.4.1                       target=x86 cflags="-m32" cppflags="-m32" cxxflags="-m32" fflags="-m32" ldflags="-m32"
+    - vc@0.7.4                        target=x86 cflags="-m32" cppflags="-m32" cxxflags="-m32" fflags="-m32" ldflags="-m32"
   concretization: together
   packages:
     all:
