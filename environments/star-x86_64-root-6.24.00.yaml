@@ -14,7 +14,6 @@ spack:
     - g4neutronxs@1.4
     - g4photonevaporation@5.2
     - g4saiddata@1.1
-    - gcc@10.2.0
     - geant4
     - geant4-vmc
     - genfit
