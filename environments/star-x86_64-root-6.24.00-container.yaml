@@ -15,6 +15,7 @@ spack:
     - log4cxx
     - mesa
     - mysql cxxstd=11
+    - rave
     - root@6.24.00
     - star-env
     - star-table
