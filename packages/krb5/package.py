@@ -57,7 +57,7 @@ class Krb5(AutotoolsPackage):
             string=True)
 
     def configure_args(self):
-        args = ['--without-system-verto']
+        args = ['--without-system-verto', '--without-libedit']
 
         if '~shared' in self.spec:
             args.append('--enable-static')

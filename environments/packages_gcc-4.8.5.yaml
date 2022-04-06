@@ -9,6 +9,7 @@ packages:
     version: [2.36.1]
     variants: +plugins
   ftgl: {}
+  krb5: {}
   mesa:
     version: [20.2.1]
   boost:
