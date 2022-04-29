@@ -7,6 +7,7 @@ spack:
     - $spack/../environments/packages_gcc-4.8.5.yaml
     - $spack/../environments/modules.yaml
   specs:
+    - boost cxxstd=11
     - clhep
     - eigen
     - fastjet
