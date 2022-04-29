@@ -19,6 +19,7 @@ class Rave(AutotoolsPackage):
     depends_on('libtool',  type='build')
     depends_on('m4',       type='build')
 
+    depends_on('boost')
     depends_on('clhep')
 
     def autoreconf(self, spec, prefix):
