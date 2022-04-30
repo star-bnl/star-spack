@@ -11,6 +11,7 @@ packages:
   ftgl: {}
   krb5: {}
   mesa:
+    variants: ~llvm
     version: [20.2.1]
   boost:
     version: [1.59.0]
