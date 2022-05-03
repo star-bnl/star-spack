@@ -5,6 +5,8 @@ on:
     branches:
       - main
       - develop
+    tags:
+      - '*'
   pull_request:
 
 jobs:
@@ -14,19 +16,54 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
 
-      - name: Login to GitHub Container Registry
+      - name: Build image
+        uses: docker/build-push-action@v2
+        with:
+          tags: star-spack
+          build-args: buildcache=yes
+          outputs: type=docker,dest=/tmp/star-spack.tar
+
+      - name: Upload image artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: star-spack
+          path: /tmp/star-spack.tar
+
+  test:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Download image artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: star-spack
+          path: /tmp/
+
+      - run: docker load --input /tmp/star-spack.tar
+      - run: docker run star-spack module avail
+
+  tag:
+    if: startsWith(github.ref, 'refs/tags/')
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - name: Login to GitHub container registry
         uses: docker/login-action@v1
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build Container
-        uses: docker/build-push-action@v2
+      - name: Download image artifact
+        uses: actions/download-artifact@v3
         with:
-          tags: ghcr.io/star-bnl/star-spack
-          build-args: buildcache=yes
-          push: true
+          name: star-spack
+          path: /tmp/
 
-      - name: Run
-        run: docker run ghcr.io/star-bnl/star-spack module avail
+      - name: Get branch name
+        id: branch-name
+        uses: tj-actions/branch-names@v5.2
+
+      - run: docker load --input /tmp/star-spack.tar
+      - run: docker tag star-spack ghcr.io/star-bnl/star-spack:${{ steps.branch-name.outputs.tag }}
+      - run: docker push ghcr.io/star-bnl/star-spack:${{ steps.branch-name.outputs.tag }}
