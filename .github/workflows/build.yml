@@ -1,0 +1,32 @@
+name: CI Build
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build Container
+        uses: docker/build-push-action@v2
+        with:
+          tags: ghcr.io/star-bnl/star-spack
+          build-args: buildcache=yes
+          push: true
+
+      - name: Run
+        run: docker run ghcr.io/star-bnl/star-spack module avail
