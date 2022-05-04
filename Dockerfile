@@ -16,7 +16,17 @@ RUN yum update -q -y \
  && yum install -y \
     gcc gcc-c++ gcc-gfortran \
     git unzip make patch perl perl-Data-Dumper \
+    lapack-static blas-static imake motif-devel \
  && yum clean all
+
+# Install cernlib
+RUN mkdir /cern && cd /cern \
+ && curl -sL https://github.com/psilib/cernlib/archive/centos7.tar.gz | tar -xz --strip-components 1 \
+ && ./build_cernlib.sh \
+ && mv /usr/lib64/libblas.a   /cern/2006/lib/libblas.a \
+ && mv /usr/lib64/liblapack.a /cern/2006/lib/liblapack3.a \
+ && ln -s 2006 /cern/pro \
+ && rm -fr /cern/2006/src /cern/2006/build
 
 COPY . star-spack
 
@@ -50,6 +60,7 @@ COPY --from=build-stage /opt/buildcache /opt/buildcache
 
 FROM ${baseos} AS final-stage
 
+COPY --from=build-stage /cern /cern
 COPY --from=build-stage /opt/software /opt/software
 COPY --from=build-stage /star-spack/spack/var/spack/environments/star-env/loads /etc/profile.d/z10_load_spack_env_modules.sh
 COPY --from=build-stage /star-spack/spack/share/spack/modules/linux-scientific7-x86_64 /opt/linux-scientific7-x86_64
