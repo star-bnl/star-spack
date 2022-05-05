@@ -1,0 +1,40 @@
+# Pick one from [os, bc]
+ARG baseimg=bc
+
+ARG baseimg_os=scientificlinux/sl:7
+ARG baseimg_bc=ghcr.io/star-bnl/star-spack:buildcache
+
+FROM ${baseimg_os} AS baseimg_os-stage
+FROM ${baseimg_bc} AS baseimg_bc-stage
+
+FROM baseimg_${baseimg}-stage AS build-stage
+
+ARG starenv=x86_64-root-6.16.00
+
+RUN yum update -q -y \
+ && yum install -y \
+    gcc gcc-c++ gcc-gfortran \
+    git unzip make patch perl perl-Data-Dumper \
+    libX11-devel libXext-devel libXpm-devel \
+ && yum clean all
+
+RUN mkdir -p star-spack/spack && curl -sL https://github.com/spack/spack/archive/v0.17.2.tar.gz | tar -xz --strip-components 1 -C star-spack/spack
+
+COPY . star-spack
+
+# Create or add packages to /opt/buildcache
+SHELL ["/bin/bash", "-c"]
+
+RUN source star-spack/setup.sh \
+ && spack mirror add buildcache /opt/buildcache \
+ && spack buildcache update-index -d /opt/buildcache \
+ && spack env create star-env star-spack/environments/star-${starenv}-container.yaml \
+ && spack env activate star-env \
+ && spack --insecure install --no-check-signature \
+ && spack buildcache create -f -d /opt/buildcache --unsigned --allow-root $(spack find --no-groups --format "{name}") \
+ && spack env deactivate
+
+
+FROM ${baseimg_os} AS buildcache-stage
+
+COPY --from=build-stage /opt/buildcache /opt/buildcache

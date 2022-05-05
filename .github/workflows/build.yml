@@ -20,7 +20,6 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           tags: star-spack
-          build-args: buildcache=yes
           outputs: type=docker,dest=/tmp/star-spack.tar
 
       - name: Upload image artifact

@@ -1,14 +1,13 @@
-ARG baseos=scientificlinux/sl:7
-ARG buildcache=yes
+# Pick one from [os, bc]
+ARG baseimg=bc
 
+ARG baseimg_os=scientificlinux/sl:7
+ARG baseimg_bc=ghcr.io/star-bnl/star-spack:buildcache
 
-FROM ${baseos} AS buildcache-no-stage
+FROM ${baseimg_os} AS baseimg_os-stage
+FROM ${baseimg_bc} AS baseimg_bc-stage
 
-FROM ${baseos} AS buildcache-yes-stage
-COPY --from=ghcr.io/star-bnl/star-spack:buildcache /opt/buildcache /opt/buildcache
-
-
-FROM buildcache-${buildcache}-stage AS build-stage
+FROM baseimg_${baseimg}-stage AS build-stage
 
 ARG starenv=x86_64-root-6.16.00
 
@@ -28,22 +27,21 @@ RUN mkdir /cern && cd /cern \
  && ln -s 2006 /cern/pro \
  && rm -fr /cern/2006/src /cern/2006/build
 
-COPY . star-spack
-
 RUN mkdir -p star-spack/spack && curl -sL https://github.com/spack/spack/archive/v0.17.2.tar.gz | tar -xz --strip-components 1 -C star-spack/spack
 
-# Create star-spack/spack/var/spack/environments/star-env/loads and /opt/buildcache
+COPY . star-spack
+
+# Create star-spack/spack/var/spack/environments/star-env/loads
 SHELL ["/bin/bash", "-c"]
+
 RUN source star-spack/setup.sh \
- && spack env create star-env star-spack/environments/star-${starenv}-container.yaml \
- && spack env activate star-env \
  && spack mirror add buildcache /opt/buildcache \
  && spack buildcache update-index -d /opt/buildcache \
+ && spack env create star-env star-spack/environments/star-${starenv}-container.yaml \
+ && spack env activate star-env \
  && spack --insecure install --no-check-signature \
- && spack clean --all \
  && spack env loads \
- && spack module tcl refresh -y \
- && spack buildcache create -d /opt/buildcache --unsigned --allow-root $(spack find --no-groups --format "{name}")
+ && spack module tcl refresh -y
 
 # Strip all the binaries
 RUN find -L /opt/software/* -type f -exec readlink -f '{}' \; | \
@@ -53,12 +51,7 @@ RUN find -L /opt/software/* -type f -exec readlink -f '{}' \; | \
     awk -F: '{print $1}' | xargs strip -S
 
 
-FROM ${baseos} AS buildcache-stage
-
-COPY --from=build-stage /opt/buildcache /opt/buildcache
-
-
-FROM ${baseos} AS final-stage
+FROM ${baseimg_os} AS starenv-stage
 
 COPY --from=build-stage /cern /cern
 COPY --from=build-stage /opt/software /opt/software
@@ -85,4 +78,4 @@ ENV MODULEPATH=/opt/linux-scientific7-x86_64
 
 RUN echo -e '#!/bin/bash --login\n set -e; eval "$@"' > entrypoint.sh && chmod 755 entrypoint.sh
 ENTRYPOINT ["./entrypoint.sh"]
-CMD ["bash"]
+CMD ["/bin/bash"]
