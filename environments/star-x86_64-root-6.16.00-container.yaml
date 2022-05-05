@@ -13,6 +13,7 @@ spack:
     - genfit@b496504a
     - kfparticle
     - kitrack
+    - libxml2
     - log4cxx
     - mesa
     - mysql cxxstd=11

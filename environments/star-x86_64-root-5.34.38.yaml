@@ -14,6 +14,7 @@ spack:
     - kfparticle
     - kitrack
     - lhapdf
+    - libxml2
     - log4cxx
     - mesa
     - mysql cxxstd=11
