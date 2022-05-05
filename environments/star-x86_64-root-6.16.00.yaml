@@ -18,6 +18,7 @@ spack:
     - geant4
     - geant4-vmc
     - genfit@b496504a
+    - gsl
     - kfparticle
     - kitrack
     - libxml2

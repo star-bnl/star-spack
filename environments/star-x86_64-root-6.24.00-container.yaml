@@ -11,6 +11,7 @@ spack:
     - eigen
     - fastjet
     - genfit
+    - gsl
     - kfparticle
     - kitrack
     - libxml2
