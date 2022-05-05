@@ -1,5 +1,5 @@
 ARG baseos=scientificlinux/sl:7
-ARG buildcache=no
+ARG buildcache=yes
 
 
 FROM ${baseos} AS buildcache-no-stage
