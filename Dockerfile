@@ -10,7 +10,7 @@ COPY --from=ghcr.io/star-bnl/star-spack:buildcache /opt/buildcache /opt/buildcac
 
 FROM buildcache-${buildcache}-stage AS build-stage
 
-ARG star_env=x86_64-root-6.24.00
+ARG starenv=x86_64-root-6.16.00
 
 RUN yum update -q -y \
  && yum install -y \
@@ -35,7 +35,7 @@ RUN mkdir -p star-spack/spack && curl -sL https://github.com/spack/spack/archive
 # Create star-spack/spack/var/spack/environments/star-env/loads and /opt/buildcache
 SHELL ["/bin/bash", "-c"]
 RUN source star-spack/setup.sh \
- && spack env create star-env star-spack/environments/star-${star_env}-container.yaml \
+ && spack env create star-env star-spack/environments/star-${starenv}-container.yaml \
  && spack env activate star-env \
  && spack mirror add buildcache /opt/buildcache \
  && spack buildcache update-index -d /opt/buildcache \
