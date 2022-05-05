@@ -4,14 +4,20 @@ from spack import *
 class StarEnv(BundlePackage):
     """External packages STAR software depends on"""
 
-    version('0.1')
+    homepage = "https://github.com/star-bnl/star-spack/"
 
-    depends_on('python')
+    version('0.1.2')
+
+    depends_on('boost')
     depends_on('eigen')
+    depends_on('fastjet')
     depends_on('genfit')
     depends_on('kfparticle')
     depends_on('kitrack')
+    depends_on('libxml2')
     depends_on('log4cxx')
+    depends_on('mysql')
+    depends_on('python')
     depends_on('rave')
     depends_on('root')
     depends_on('vc')
