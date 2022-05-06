@@ -18,9 +18,9 @@ RUN yum update -q -y \
     libX11-devel libXext-devel libXpm-devel \
  && yum clean all
 
-RUN mkdir -p star-spack/spack && curl -sL https://github.com/spack/spack/archive/v0.17.2.tar.gz | tar -xz --strip-components 1 -C star-spack/spack
-
 COPY . star-spack
+
+RUN mkdir -p star-spack/spack && curl -sL https://github.com/spack/spack/archive/v0.17.2.tar.gz | tar -xz --strip-components 1 -C star-spack/spack
 
 # Create or add packages to /opt/buildcache
 SHELL ["/bin/bash", "-c"]

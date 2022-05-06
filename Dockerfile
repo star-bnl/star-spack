@@ -27,9 +27,9 @@ RUN mkdir /cern && cd /cern \
  && ln -s 2006 /cern/pro \
  && rm -fr /cern/2006/src /cern/2006/build
 
-RUN mkdir -p star-spack/spack && curl -sL https://github.com/spack/spack/archive/v0.17.2.tar.gz | tar -xz --strip-components 1 -C star-spack/spack
-
 COPY . star-spack
+
+RUN mkdir -p star-spack/spack && curl -sL https://github.com/spack/spack/archive/v0.17.2.tar.gz | tar -xz --strip-components 1 -C star-spack/spack
 
 # Create star-spack/spack/var/spack/environments/star-env/loads
 SHELL ["/bin/bash", "-c"]
