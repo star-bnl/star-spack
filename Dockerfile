@@ -75,6 +75,19 @@ RUN yum update -q -y \
 RUN pip install pyparsing==2.2.0
 
 ENV MODULEPATH=/opt/linux-scientific7-x86_64
+ENV USE_64BITS=1
+ENV CERN=/cern
+ENV CERN_LEVEL=pro
+ENV CERN_ROOT=$CERN/$CERN_LEVEL
+ENV OPTSTAR=/opt/software
+ENV STAR_HOST_SYS=sl79_gcc485
+ENV PATH=$CERN_ROOT/bin:$PATH
+ENV LIBPATH+=:/lib64:/lib
+
+# Empty dummy directories checked by cons
+RUN mkdir $OPTSTAR/lib && mkdir $OPTSTAR/include
+# Some STAR packages include mysql.h as <mysql/mysql.h>
+RUN source /etc/profile && ln -s `mysql_config --variable=pkgincludedir` /usr/include/mysql
 
 RUN echo -e '#!/bin/bash --login\n set -e; eval "$@"' > entrypoint.sh && chmod 755 entrypoint.sh
 ENTRYPOINT ["./entrypoint.sh"]
