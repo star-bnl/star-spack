@@ -4,12 +4,14 @@ ARG baseimg=bc
 ARG baseimg_os=scientificlinux/sl:7
 ARG baseimg_bc=ghcr.io/star-bnl/star-spack:buildcache
 
+# This implements a switch for /opt/buildcache in buildcache-stage
 FROM ${baseimg_os} AS baseimg_os-stage
+RUN mkdir -p /opt/buildcache
 FROM ${baseimg_bc} AS baseimg_bc-stage
+FROM baseimg_${baseimg}-stage AS buildcache-stage
 
-FROM baseimg_${baseimg}-stage AS build-stage
 
-ARG starenv=x86_64-root-6.16.00
+FROM ${baseimg_os} AS build-stage
 
 RUN yum update -q -y \
  && yum install -y \
@@ -33,6 +35,10 @@ RUN mkdir -p star-spack/spack && curl -sL https://github.com/spack/spack/archive
 
 # Create star-spack/spack/var/spack/environments/star-env/loads
 SHELL ["/bin/bash", "-c"]
+
+COPY --from=buildcache-stage /opt/buildcache /opt/buildcache
+
+ARG starenv=x86_64-root-6.16.00
 
 RUN source star-spack/setup.sh \
  && spack mirror add buildcache /opt/buildcache \
