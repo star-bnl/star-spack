@@ -10,41 +10,64 @@ on:
   pull_request:
 
 jobs:
+  envmatrix:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+      - run: echo '::set-output name=matrix::[{"name":"root5", "file":"x86_64-root-5.34.38"}, {"name":"root616", "file":"x86_64-root-6.16.00"}, {"name":"root624", "file":"x86_64-root-6.24.00"}]'
+        id: set-matrix
+
   build:
     runs-on: ubuntu-latest
+    name: build-${{ matrix.starenv.name }}
+    needs: envmatrix
+    strategy:
+      matrix:
+        starenv: ${{ fromJSON(needs.envmatrix.outputs.matrix) }}
     steps:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
 
-      - name: Build image
+      - name: Login to GitHub container registry
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and cache build-stage
         uses: docker/build-push-action@v2
         with:
-          tags: star-spack
-          outputs: type=docker,dest=/tmp/star-spack.tar
-
-      - name: Upload image artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: star-spack
-          path: /tmp/star-spack.tar
+          cache-from: type=registry,ref=ghcr.io/star-bnl/star-spack:cache-${{ matrix.starenv.name }}
+          cache-to:   type=registry,ref=ghcr.io/star-bnl/star-spack:cache-${{ matrix.starenv.name }},mode=max
+          build-args: starenv=${{ matrix.starenv.file }}
 
   test:
     runs-on: ubuntu-latest
-    needs: build
+    name: test-${{ matrix.starenv.name }}
+    strategy:
+      matrix:
+        starenv: ${{ fromJSON(needs.envmatrix.outputs.matrix) }}
+    needs: [envmatrix, build]
     steps:
-      - name: Download image artifact
-        uses: actions/download-artifact@v3
+      - name: Test
+        uses: docker/build-push-action@v2
         with:
-          name: star-spack
-          path: /tmp/
+          cache-from: type=registry,ref=ghcr.io/star-bnl/star-spack:cache-${{ matrix.starenv.name }}
+          build-args: starenv=${{ matrix.starenv.file }}
+          tags: star-spack
+          load: true
 
-      - run: docker load --input /tmp/star-spack.tar
       - run: docker run star-spack module avail
 
   tag:
     if: startsWith(github.ref, 'refs/tags/')
     runs-on: ubuntu-latest
-    needs: test
+    strategy:
+      matrix:
+        starenv: ${{ fromJSON(needs.envmatrix.outputs.matrix) }}
+    needs: [envmatrix, test]
     steps:
       - name: Login to GitHub container registry
         uses: docker/login-action@v1
@@ -53,16 +76,17 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Download image artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: star-spack
-          path: /tmp/
-
       - name: Get branch name
         id: branch-name
         uses: tj-actions/branch-names@v5.2
 
-      - run: docker load --input /tmp/star-spack.tar
-      - run: docker tag star-spack ghcr.io/star-bnl/star-spack:${{ steps.branch-name.outputs.tag }}
-      - run: docker push ghcr.io/star-bnl/star-spack:${{ steps.branch-name.outputs.tag }}
+      - name: Tag
+        uses: docker/build-push-action@v2
+        with:
+          cache-from: type=registry,ref=ghcr.io/star-bnl/star-spack:cache-${{ matrix.starenv.name }}
+          build-args: starenv=${{ matrix.starenv.file }}
+          tags: star-spack
+          load: true
+
+      - run: docker tag star-spack ghcr.io/star-bnl/star-spack:${{ steps.branch-name.outputs.tag }}-${{ matrix.starenv.name }}
+      - run: docker push ghcr.io/star-bnl/star-spack:${{ steps.branch-name.outputs.tag }}-${{ matrix.starenv.name }}
