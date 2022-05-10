@@ -26,6 +26,9 @@ jobs:
       matrix:
         starenv: ${{ fromJSON(needs.envmatrix.outputs.matrix) }}
     steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
@@ -39,6 +42,7 @@ jobs:
       - name: Build and cache build-stage
         uses: docker/build-push-action@v3
         with:
+          context: .
           cache-from: type=registry,ref=ghcr.io/star-bnl/star-spack:cache-${{ matrix.starenv.name }}
           cache-to:   type=registry,ref=ghcr.io/star-bnl/star-spack:cache-${{ matrix.starenv.name }},mode=max
           build-args: starenv=${{ matrix.starenv.file }}
