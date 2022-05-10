@@ -90,8 +90,6 @@ jobs:
       - name: Get branch name
         id: branch-name
         uses: tj-actions/branch-names@v5.2
-        env:
-          REFTAG: ${{ steps.branch-name.outputs.tag }}-${{ matrix.starenv.name }}
 
       - name: Download image artifact
         uses: actions/download-artifact@v3
@@ -99,6 +97,7 @@ jobs:
           name: star-spack-${{ matrix.starenv.name }}
           path: /tmp/
 
+      - run: echo "REFTAG=${{ steps.branch-name.outputs.current_branch }}-${{ matrix.starenv.name }}" >> $GITHUB_ENV
       - run: docker load --input /tmp/star-spack-${{ matrix.starenv.name }}.tar
-      - run: docker tag star-spack ghcr.io/star-bnl/star-spack:${{ env.REFTAG }}
-      - run: docker push ghcr.io/star-bnl/star-spack:${{ env.REFTAG }}
+      - run: docker tag star-spack ghcr.io/star-bnl/star-spack:${REFTAG}
+      - run: docker push ghcr.io/star-bnl/star-spack:${REFTAG}
