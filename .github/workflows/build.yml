@@ -55,6 +55,14 @@ jobs:
           name: star-spack-${{ matrix.starenv }}
           path: /tmp/star-spack-${{ matrix.starenv }}.tar
 
+  build-cleanup:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - run: .github/workflows/delete_untagged.py ${{ secrets.STAR_SPACK_TOKEN }}
+
   test:
     runs-on: ubuntu-latest
     name: test-${{ matrix.starenv }}
