@@ -38,12 +38,12 @@ SHELL ["/bin/bash", "-c"]
 
 COPY --from=buildcache-stage /opt/buildcache /opt/buildcache
 
-ARG starenv=x86_64-root-6.16.00
+ARG starenv=root616
 
 RUN source star-spack/setup.sh \
  && spack mirror add buildcache /opt/buildcache \
  && spack buildcache update-index -d /opt/buildcache \
- && spack env create star-env star-spack/environments/star-${starenv}-container.yaml \
+ && spack env create star-env star-spack/environments/${starenv}.yaml \
  && spack env activate star-env \
  && spack --insecure install --no-check-signature \
  && spack env loads \

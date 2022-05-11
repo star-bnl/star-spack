@@ -15,12 +15,12 @@ jobs:
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
-      - run: echo '::set-output name=matrix::[{"name":"root5", "file":"x86_64-root-5.34.38"}, {"name":"root616", "file":"x86_64-root-6.16.00"}, {"name":"root624", "file":"x86_64-root-6.24.00"}]'
+      - run: echo '::set-output name=matrix::["root5", "root616", "root624"]'
         id: set-matrix
 
   build:
     runs-on: ubuntu-latest
-    name: build-${{ matrix.starenv.name }}
+    name: build-${{ matrix.starenv }}
     needs: envmatrix
     strategy:
       matrix:
@@ -43,21 +43,21 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           context: .
-          cache-from: type=registry,ref=ghcr.io/star-bnl/star-spack:cache-${{ matrix.starenv.name }}
-          cache-to:   type=registry,ref=ghcr.io/star-bnl/star-spack:cache-${{ matrix.starenv.name }},mode=max
-          build-args: starenv=${{ matrix.starenv.file }}
+          cache-from: type=registry,ref=ghcr.io/star-bnl/star-spack:cache-${{ matrix.starenv }}
+          cache-to:   type=registry,ref=ghcr.io/star-bnl/star-spack:cache-${{ matrix.starenv }},mode=max
+          build-args: starenv=${{ matrix.starenv }}
           tags: star-spack
-          outputs: type=docker,dest=/tmp/star-spack-${{ matrix.starenv.name }}.tar
+          outputs: type=docker,dest=/tmp/star-spack-${{ matrix.starenv }}.tar
 
       - name: Upload image artifact
         uses: actions/upload-artifact@v3
         with:
-          name: star-spack-${{ matrix.starenv.name }}
-          path: /tmp/star-spack-${{ matrix.starenv.name }}.tar
+          name: star-spack-${{ matrix.starenv }}
+          path: /tmp/star-spack-${{ matrix.starenv }}.tar
 
   test:
     runs-on: ubuntu-latest
-    name: test-${{ matrix.starenv.name }}
+    name: test-${{ matrix.starenv }}
     strategy:
       matrix:
         starenv: ${{ fromJSON(needs.envmatrix.outputs.matrix) }}
@@ -66,10 +66,10 @@ jobs:
       - name: Download image artifact
         uses: actions/download-artifact@v3
         with:
-          name: star-spack-${{ matrix.starenv.name }}
+          name: star-spack-${{ matrix.starenv }}
           path: /tmp/
 
-      - run: docker load --input /tmp/star-spack-${{ matrix.starenv.name }}.tar
+      - run: docker load --input /tmp/star-spack-${{ matrix.starenv }}.tar
       - run: docker run star-spack module avail
 
   tag:
@@ -94,10 +94,10 @@ jobs:
       - name: Download image artifact
         uses: actions/download-artifact@v3
         with:
-          name: star-spack-${{ matrix.starenv.name }}
+          name: star-spack-${{ matrix.starenv }}
           path: /tmp/
 
-      - run: echo "REFTAG=${{ steps.branch-name.outputs.current_branch }}-${{ matrix.starenv.name }}" >> $GITHUB_ENV
-      - run: docker load --input /tmp/star-spack-${{ matrix.starenv.name }}.tar
+      - run: echo "REFTAG=${{ steps.branch-name.outputs.current_branch }}-${{ matrix.starenv }}" >> $GITHUB_ENV
+      - run: docker load --input /tmp/star-spack-${{ matrix.starenv }}.tar
       - run: docker tag star-spack ghcr.io/star-bnl/star-spack:${REFTAG}
       - run: docker push ghcr.io/star-bnl/star-spack:${REFTAG}
