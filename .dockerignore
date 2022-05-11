@@ -1,6 +1,4 @@
-.git/
-.github/
-.gitignore
+.git*
 .dockerignore
-Dockerfile
-spack/
+Dockerfile*
+spack/*
