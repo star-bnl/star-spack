@@ -14,10 +14,12 @@ packages:
     variants: ~llvm
     version: [20.2.1]
   boost:
+    variants: cxxstd=11
     version: [1.59.0]
   llvm:
     version: [7.1.0]
   mysql:
+    variants: cxxstd=11
     version: [5.7.27]
   openblas: 
     version: [0.3.10]

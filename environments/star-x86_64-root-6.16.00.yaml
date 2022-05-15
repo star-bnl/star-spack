@@ -7,7 +7,7 @@ spack:
     - $spack/../environments/packages_gcc-4.8.5.yaml
     - $spack/../environments/modules.yaml
   specs:
-    - boost cxxstd=11
+    - boost
     - clhep
     - eigen
     - fastjet
@@ -25,7 +25,7 @@ spack:
     - lhapdf
     - log4cxx
     - mesa
-    - mysql cxxstd=11
+    - mysql
     - rave
     - root@6.16.00 +table
     - star-env
