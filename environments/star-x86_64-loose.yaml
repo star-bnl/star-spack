@@ -1,0 +1,19 @@
+# This is a Spack Environment file.
+#
+# It describes a set of packages to be installed, along with
+# configuration settings.
+spack:
+  include:
+    - $spack/../environments/packages_gcc-4.8.5.yaml
+    - $spack/../environments/modules.yaml
+  specs:
+    - vc@1.4.1
+    - vc@0.7.4
+  concretization: separately
+  packages:
+    all:
+      target: [x86_64]
+  view: false
+  config:
+    install_tree:
+      root: /opt/software
