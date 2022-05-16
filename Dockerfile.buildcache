@@ -1,3 +1,5 @@
+# syntax=docker/dockerfile:latest
+
 # Pick one from [os, bc]
 ARG baseimg=bc
 
@@ -8,8 +10,6 @@ FROM ${baseimg_os} AS baseimg_os-stage
 FROM ${baseimg_bc} AS baseimg_bc-stage
 
 FROM baseimg_${baseimg}-stage AS build-stage
-
-ARG starenv=root616
 
 RUN yum update -q -y \
  && yum install -y \
@@ -23,17 +23,20 @@ COPY . star-spack
 RUN mkdir -p star-spack/spack && curl -sL https://github.com/spack/spack/archive/v0.17.2.tar.gz | tar -xz --strip-components 1 -C star-spack/spack
 
 # Create or add packages to /opt/buildcache
-SHELL ["/bin/bash", "-c"]
+COPY --chmod=0755 <<-"EOF" dostarenv.sh
+	#!/bin/bash
+	source star-spack/setup.sh
+	rm -f $HOME/.spack/mirrors.yaml
+	spack mirror add buildcache /opt/buildcache
+	spack buildcache update-index -d /opt/buildcache
+	spack env create ${1} star-spack/environments/${1}.yaml
+	spack env activate ${1}
+	spack --insecure install --no-check-signature
+	spack buildcache create -d /opt/buildcache --unsigned --allow-root $(spack find --no-groups --format "/{hash}")
+	spack env deactivate
+EOF
 
-RUN source star-spack/setup.sh \
- && spack mirror add buildcache /opt/buildcache \
- && spack buildcache update-index -d /opt/buildcache \
- && spack env create star-env star-spack/environments/${starenv}.yaml \
- && spack env activate star-env \
- && spack --insecure install --no-check-signature \
- && spack buildcache create -f -d /opt/buildcache --unsigned --allow-root $(spack find --no-groups --format "{name}") \
- && spack env deactivate
-
+RUN ./dostarenv.sh star-x86_64-loose && ./dostarenv.sh root5 && ./dostarenv.sh root616 && ./dostarenv.sh root624
 
 FROM ${baseimg_os} AS buildcache-stage
 
