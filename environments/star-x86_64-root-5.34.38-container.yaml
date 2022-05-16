@@ -21,7 +21,6 @@ spack:
     - rave
     - root@5.34.38 ~python +table
     - star-env
-    - vc_@1.4.1
     - vc@0.7.4
   concretization: together
   packages:

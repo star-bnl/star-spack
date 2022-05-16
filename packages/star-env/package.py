@@ -21,7 +21,6 @@ class StarEnv(BundlePackage):
     depends_on('rave')
     depends_on('root')
     depends_on('vc')
-    depends_on('vc_')
     depends_on('star-table', when='^root@6.18.00:')
 
     def setup_run_environment(self, env):
@@ -50,8 +49,4 @@ class StarEnv(BundlePackage):
         env.append_path('LD_LIBRARY_PATH', self.spec['libbsd'].prefix.lib)
         env.append_path('LD_LIBRARY_PATH', self.spec['libmd'].prefix.lib)
 
-        # Based on ROOT version pick default Vc from the two available options
-        if self.spec['root'].satisfies('@6.16'):
-            env.set('Vc_DIR', self.spec['vc_'].prefix)
-        else:
-            env.set('Vc_DIR', self.spec['vc'].prefix)
+        env.set('Vc_DIR', self.spec['vc'].prefix)
