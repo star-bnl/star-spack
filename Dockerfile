@@ -1,3 +1,7 @@
+# syntax=docker/dockerfile:latest
+
+ARG starenv=root616
+
 # Pick one from [os, bc]
 ARG baseimg=bc
 
@@ -33,21 +37,25 @@ COPY . star-spack
 
 RUN mkdir -p star-spack/spack && curl -sL https://github.com/spack/spack/archive/v0.17.2.tar.gz | tar -xz --strip-components 1 -C star-spack/spack
 
-# Create star-spack/spack/var/spack/environments/star-env/loads
-SHELL ["/bin/bash", "-c"]
+ARG starenv
 
 COPY --from=buildcache-stage /opt/buildcache /opt/buildcache
 
-ARG starenv=root616
+COPY --chmod=0755 <<-"EOF" dostarenv.sh
+	#!/bin/bash
+	source star-spack/setup.sh
+	rm -f $HOME/.spack/mirrors.yaml
+	spack mirror add buildcache /opt/buildcache
+	spack buildcache update-index -d /opt/buildcache
+	spack env create ${1} star-spack/environments/${1}.yaml
+	spack env activate ${1}
+	spack --insecure install --no-check-signature
+	spack env loads
+	spack module tcl refresh -y
+	spack env deactivate
+EOF
 
-RUN source star-spack/setup.sh \
- && spack mirror add buildcache /opt/buildcache \
- && spack buildcache update-index -d /opt/buildcache \
- && spack env create star-env star-spack/environments/${starenv}.yaml \
- && spack env activate star-env \
- && spack --insecure install --no-check-signature \
- && spack env loads \
- && spack module tcl refresh -y
+RUN ./dostarenv.sh star-x86_64-loose && ./dostarenv.sh ${starenv}
 
 # Strip all the binaries
 RUN find -L /opt/software/* -type f -exec readlink -f '{}' \; | \
@@ -59,9 +67,11 @@ RUN find -L /opt/software/* -type f -exec readlink -f '{}' \; | \
 
 FROM ${baseimg_os} AS starenv-stage
 
+ARG starenv
+
 COPY --from=build-stage /cern /cern
 COPY --from=build-stage /opt/software /opt/software
-COPY --from=build-stage /star-spack/spack/var/spack/environments/star-env/loads /etc/profile.d/z10_load_spack_env_modules.sh
+COPY --from=build-stage /star-spack/spack/var/spack/environments/${starenv}/loads /etc/profile.d/z10_load_spack_env_modules.sh
 COPY --from=build-stage /star-spack/spack/share/spack/modules/linux-scientific7-x86_64 /opt/linux-scientific7-x86_64
 
 # epel repo is for python-pip only
