@@ -104,7 +104,8 @@ ENV LIBPATH+=:/lib64:/lib
 # Empty dummy directories checked by cons
 RUN mkdir $OPTSTAR/lib && mkdir $OPTSTAR/include
 # Some STAR packages include mysql.h as <mysql/mysql.h>
-RUN source /etc/profile && ln -s `mysql_config --variable=pkgincludedir` /usr/include/mysql
+RUN source /etc/profile \
+ && ln -s `mysql_config --variable=pkgincludedir` /usr/include/mysql
 
 RUN echo -e '#!/bin/bash --login\n set -e; eval "$@"' > entrypoint.sh && chmod 755 entrypoint.sh
 ENTRYPOINT ["./entrypoint.sh"]
