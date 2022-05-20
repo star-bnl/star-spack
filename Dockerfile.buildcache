@@ -36,7 +36,7 @@ COPY --chmod=0755 <<-"EOF" dostarenv.sh
 	spack env deactivate
 EOF
 
-RUN ./dostarenv.sh star-x86_64-loose && ./dostarenv.sh root5 && ./dostarenv.sh root616 && ./dostarenv.sh root624
+RUN ./dostarenv.sh star-x86_64-loose && ./dostarenv.sh root5 && ./dostarenv.sh root6 && ./dostarenv.sh root624
 
 FROM ${baseimg_os} AS buildcache-stage
 

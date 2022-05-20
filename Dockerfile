@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:latest
 
-ARG starenv=root616
+ARG starenv=root6
 
 # Pick one from [os, bc]
 ARG baseimg=bc
