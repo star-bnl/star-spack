@@ -107,6 +107,11 @@ RUN mkdir $OPTSTAR/lib && mkdir $OPTSTAR/include
 RUN source /etc/profile \
  && ln -s `mysql_config --variable=pkgincludedir` /usr/include/mysql
 
-RUN echo -e '#!/bin/bash --login\n set -e; eval "$@"' > entrypoint.sh && chmod 755 entrypoint.sh
-ENTRYPOINT ["./entrypoint.sh"]
+COPY --chmod=0755 <<-"EOF" /opt/entrypoint.sh
+	#!/bin/bash -l
+	set -e
+	exec "$@"
+EOF
+
+ENTRYPOINT ["/opt/entrypoint.sh"]
 CMD ["/bin/bash"]

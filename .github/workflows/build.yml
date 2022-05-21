@@ -78,7 +78,7 @@ jobs:
           path: /tmp/
 
       - run: docker load --input /tmp/star-spack-${{ matrix.starenv }}.tar
-      - run: docker run star-spack module avail
+      - run: docker run star-spack modulecmd bash avail
 
   tag:
     if: startsWith(github.ref, 'refs/tags/')
