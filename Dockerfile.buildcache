@@ -45,7 +45,8 @@ RUN mkdir -p star-spack/spack && curl -sL https://github.com/spack/spack/archive
 
 # Create or add packages to /opt/buildcache
 COPY --chmod=0755 <<-"EOF" dostarenv.sh
-	#!/bin/bash
+	#!/bin/bash -l
+	set -e
 	source star-spack/setup.sh
 	rm -f $HOME/.spack/mirrors.yaml
 	spack mirror add buildcache /opt/buildcache
@@ -57,7 +58,10 @@ COPY --chmod=0755 <<-"EOF" dostarenv.sh
 	spack env deactivate
 EOF
 
-RUN ./dostarenv.sh star-x86_64-loose && ./dostarenv.sh root5 && ./dostarenv.sh root6 && ./dostarenv.sh root624
+RUN ./dostarenv.sh star-x86_64-loose
+RUN ./dostarenv.sh root5
+RUN ./dostarenv.sh root6
+RUN ./dostarenv.sh root624
 
 FROM ${baseimg_os} AS buildcache-stage
 
