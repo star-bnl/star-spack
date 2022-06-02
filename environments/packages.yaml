@@ -40,5 +40,3 @@ packages:
     version: [01-10-star-1]
   kfparticle:
     version: [1.1]
-  all:
-    compiler: [gcc@4.8.5]
