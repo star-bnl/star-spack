@@ -1,0 +1,12 @@
+diff --git a/core/foundation/inc/ROOT/libcpp_string_view.h b/core/foundation/inc/ROOT/libcpp_string_view.h
+index 08b491dd25..5d91d5cbd7 100644
+--- a/core/foundation/inc/ROOT/libcpp_string_view.h
++++ b/core/foundation/inc/ROOT/libcpp_string_view.h
+@@ -186,6 +186,7 @@ namespace std {
+ #include <ostream>
+ #include <iomanip>
+ #include <stdexcept>
++#include <limits>
+ 
+ //#include <__debug>
+ 

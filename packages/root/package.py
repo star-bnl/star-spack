@@ -94,6 +94,7 @@ class Root(CMakePackage):
     patch('https://github.com/root-project/root/commit/348f30a6a3b5905ef734a7bd318bc0ee8bca6dc9.diff', sha256='83334f07c204d1386ae1f20dac434ce1c8a2370a64dec36b29d8d895b998c305', level=1, when='@5.34 %gcc@9.0.0:')
     patch('https://github.com/root-project/root/commit/3c243b18768d3c3501faf3ca4e4acfc071021350.diff', sha256='822a41c7fa254119dd227845ed9b90eeb85d2c1c20ce8dcd2fcb49e7cfd6cbfc', level=1, when='@5.34 %gcc@9.0.0:')
     patch('root5-asimage.patch', level=1, when='@5.34:6.16 %gcc@9:')
+    patch('root6-61600-include-limits.patch', level=1, when='@6.16 %gcc@11:')
 
     # ###################### Variants ##########################
     # See README.md for specific notes about what ROOT configuration
