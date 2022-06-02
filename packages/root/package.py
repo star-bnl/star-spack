@@ -70,11 +70,11 @@ class Root(CMakePackage):
 
     # Widely used patch (CMS, FNAL) to increase the size of static
     # buffers used to improve the operation of TString.
-    patch('format-stringbuf-size.patch', level=0, when='@6.00.00:')
+    patch('format-stringbuf-size.patch', level=0, when='@6:')
     # Support use of `mariadb-c-client` and `mariadb` to provide the
     # MySQL API _cf_
     # https://github.com/root-project/root/commit/9c0fa8c554a569c971185249f9acfff4418c0c13.
-    patch('find-mysql.patch', level=1, when='@6.00.00:6.16.00')
+    patch('find-mysql.patch', level=1, when='@6:6.16.00')
     # Some ROOT versions did not honor the option to avoid building an
     # internal version of unuran, _cf_
     # https://github.com/root-project/ROOT/commit/3e60764f133218b6938e5aa4986de760e8f058d9.
@@ -290,11 +290,11 @@ class Root(CMakePackage):
     conflicts('%intel')
 
     # ROOT <6.08 was incompatible with the GCC 5+ ABI
-    conflicts('%gcc@5.0.0:', when='@:6.07')
+    conflicts('%gcc@5.0.0:', when='@6:6.07')
 
     # The version of Clang featured in ROOT <6.12 fails to build with
     # GCC 9.2.1, which we can safely extrapolate to the GCC 9 series.
-    conflicts('%gcc@9.0.0:', when='@:6.11')
+    conflicts('%gcc@9.0.0:', when='@6:6.11')
 
     # ROOT <6.14 was incompatible with Python 3.7+
     conflicts('^python@3.7:', when='@:6.13 +python')
@@ -488,7 +488,7 @@ class Root(CMakePackage):
             define('castor', False),
             define('ccache', False),
             define('chirp', False),
-            define('cling', self.spec.satisfies('@6.00.00:')),
+            define('cling', self.spec.satisfies('@6:')),
             define_from_variant('cocoa', 'aqua'),
             define('dataframe', True),
             define_from_variant('davix'),

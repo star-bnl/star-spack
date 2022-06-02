@@ -26,7 +26,7 @@ class Genfit(CMakePackage):
     variant('rave', default=False, description='Build with rave')
 
     depends_on('root')
-    depends_on('root@:6.16.00', when='@b496504a')
+    depends_on('root@:6.16', when='@b496504a')
     depends_on('eigen')
     depends_on('rave', when='+rave')
 
