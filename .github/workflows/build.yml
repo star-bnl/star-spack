@@ -15,7 +15,7 @@ jobs:
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
-      - run: echo '::set-output name=matrix::["root5", "root6", "root624"]'
+      - run: echo '::set-output name=matrix::{"starenv":["root5", "root6", "root624"]}'
         id: set-matrix
 
   build:
@@ -23,8 +23,7 @@ jobs:
     name: build-${{ matrix.starenv }}
     needs: envmatrix
     strategy:
-      matrix:
-        starenv: ${{ fromJSON(needs.envmatrix.outputs.matrix) }}
+      matrix: ${{ fromJSON(needs.envmatrix.outputs.matrix) }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -67,8 +66,7 @@ jobs:
     runs-on: ubuntu-latest
     name: test-${{ matrix.starenv }}
     strategy:
-      matrix:
-        starenv: ${{ fromJSON(needs.envmatrix.outputs.matrix) }}
+      matrix: ${{ fromJSON(needs.envmatrix.outputs.matrix) }}
     needs: [envmatrix, build]
     steps:
       - name: Download image artifact
@@ -84,8 +82,7 @@ jobs:
     if: startsWith(github.ref, 'refs/tags/')
     runs-on: ubuntu-latest
     strategy:
-      matrix:
-        starenv: ${{ fromJSON(needs.envmatrix.outputs.matrix) }}
+      matrix: ${{ fromJSON(needs.envmatrix.outputs.matrix) }}
     needs: [envmatrix, test]
     steps:
       - name: Login to GitHub container registry
