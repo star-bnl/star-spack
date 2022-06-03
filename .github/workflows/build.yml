@@ -15,12 +15,12 @@ jobs:
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
-      - run: echo '::set-output name=matrix::{"starenv":["root5", "root6", "root624"]}'
+      - run: echo '::set-output name=matrix::{"starenv":["root5", "root6", "root624"], "compiler":["gcc485", "gcc11"], "exclude":[{"starenv":"root624", "compiler":"gcc485"}]}'
         id: set-matrix
 
   build:
     runs-on: ubuntu-latest
-    name: build-${{ matrix.starenv }}
+    name: build-${{ matrix.starenv }}-${{ matrix.compiler }}
     needs: envmatrix
     strategy:
       matrix: ${{ fromJSON(needs.envmatrix.outputs.matrix) }}
@@ -42,17 +42,19 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           context: .
-          cache-from: type=registry,ref=ghcr.io/star-bnl/star-spack:cache-${{ matrix.starenv }}
-          cache-to:   type=registry,ref=ghcr.io/star-bnl/star-spack:cache-${{ matrix.starenv }},mode=max
-          build-args: starenv=${{ matrix.starenv }}
+          cache-from: type=registry,ref=ghcr.io/star-bnl/star-spack:cache-${{ matrix.starenv }}-${{ matrix.compiler }}
+          cache-to:   type=registry,ref=ghcr.io/star-bnl/star-spack:cache-${{ matrix.starenv }}-${{ matrix.compiler }},mode=max
+          build-args: |
+            starenv=${{ matrix.starenv }}
+            compiler=${{ matrix.compiler }}
           tags: star-spack
-          outputs: type=docker,dest=/tmp/star-spack-${{ matrix.starenv }}.tar
+          outputs: type=docker,dest=/tmp/star-spack-${{ matrix.starenv }}-${{ matrix.compiler }}.tar
 
       - name: Upload image artifact
         uses: actions/upload-artifact@v3
         with:
-          name: star-spack-${{ matrix.starenv }}
-          path: /tmp/star-spack-${{ matrix.starenv }}.tar
+          name: star-spack-${{ matrix.starenv }}-${{ matrix.compiler }}
+          path: /tmp/star-spack-${{ matrix.starenv }}-${{ matrix.compiler }}.tar
 
   build-cleanup:
     runs-on: ubuntu-latest
@@ -64,7 +66,7 @@ jobs:
 
   test:
     runs-on: ubuntu-latest
-    name: test-${{ matrix.starenv }}
+    name: test-${{ matrix.starenv }}-${{ matrix.compiler }}
     strategy:
       matrix: ${{ fromJSON(needs.envmatrix.outputs.matrix) }}
     needs: [envmatrix, build]
@@ -72,10 +74,10 @@ jobs:
       - name: Download image artifact
         uses: actions/download-artifact@v3
         with:
-          name: star-spack-${{ matrix.starenv }}
+          name: star-spack-${{ matrix.starenv }}-${{ matrix.compiler }}
           path: /tmp/
 
-      - run: docker load --input /tmp/star-spack-${{ matrix.starenv }}.tar
+      - run: docker load --input /tmp/star-spack-${{ matrix.starenv }}-${{ matrix.compiler }}.tar
       - run: docker run star-spack modulecmd bash avail
 
   tag:
@@ -99,10 +101,10 @@ jobs:
       - name: Download image artifact
         uses: actions/download-artifact@v3
         with:
-          name: star-spack-${{ matrix.starenv }}
+          name: star-spack-${{ matrix.starenv }}-${{ matrix.compiler }}
           path: /tmp/
 
-      - run: echo "REFTAG=${{ steps.branch-name.outputs.current_branch }}-${{ matrix.starenv }}" >> $GITHUB_ENV
-      - run: docker load --input /tmp/star-spack-${{ matrix.starenv }}.tar
+      - run: echo "REFTAG=${{ steps.branch-name.outputs.current_branch }}-${{ matrix.starenv }}-${{ matrix.compiler }}" >> $GITHUB_ENV
+      - run: docker load --input /tmp/star-spack-${{ matrix.starenv }}-${{ matrix.compiler }}.tar
       - run: docker tag star-spack ghcr.io/star-bnl/star-spack:${REFTAG}
       - run: docker push ghcr.io/star-bnl/star-spack:${REFTAG}
