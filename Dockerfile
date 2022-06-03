@@ -72,7 +72,7 @@ EOF
 
 RUN ./dostarenv.sh star-x86_64-loose && ./dostarenv.sh ${starenv}
 # Manually append specific vc module to loads
-RUN sh -c "source star-spack/setup.sh; spack -e star-x86_64-loose module tcl loads vc@0.7.4" >> /star-spack/spack/var/spack/environments/${starenv}/loads
+RUN /bin/bash -c "source star-spack/setup.sh; spack -e star-x86_64-loose module tcl loads vc@0.7.4" >> /star-spack/spack/var/spack/environments/${starenv}/loads
 
 # Strip all the binaries
 RUN find -L /opt/software/* -type f -exec readlink -f '{}' \; | \

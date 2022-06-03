@@ -12,29 +12,21 @@ ARG baseimg_bc=ghcr.io/star-bnl/star-spack:buildcache
 FROM ${baseimg_os} AS baseimg_os-stage
 FROM ${baseimg_bc} AS baseimg_bc-stage
 
+# Install common packages
 FROM baseimg_${baseimg}-stage AS base-stage
-RUN <<-"EOF"
-	# Install common packages
-	yum update -q -y
-	yum install -y git unzip make patch perl perl-Data-Dumper libX11-devel libXext-devel libXpm-devel
-EOF
+RUN yum install -y git unzip make patch perl perl-Data-Dumper libX11-devel libXext-devel libXpm-devel
 
+
+# Install gcc485 (default)
 FROM base-stage AS gcc485-prep-stage
-RUN <<-"EOF"
-	# Install gcc485
-	yum update -q -y
-	yum install -y gcc gcc-c++ gcc-gfortran
-EOF
+RUN yum install -y gcc gcc-c++ gcc-gfortran
 
+# Install gcc11
 FROM base-stage AS gcc11-prep-stage
-RUN <<-"EOF"
-	# Install gcc11
-	yum update -q -y
-	curl -O http://mirror.centos.org/centos/7/extras/x86_64/Packages/centos-release-scl-rh-2-3.el7.centos.noarch.rpm
-	rpm -ivh centos-release-scl-rh-2-3.el7.centos.noarch.rpm
-	yum install -y devtoolset-11
-	echo "source /opt/rh/devtoolset-11/enable" >> /etc/bashrc
-EOF
+RUN curl -O http://mirror.centos.org/centos/7/extras/x86_64/Packages/centos-release-scl-rh-2-3.el7.centos.noarch.rpm \
+ && rpm -ivh centos-release-scl-rh-2-3.el7.centos.noarch.rpm \
+ && yum install -y devtoolset-11 \
+ && echo "source /opt/rh/devtoolset-11/enable" >> /etc/bashrc
 
 
 FROM ${compiler}-prep-stage AS build-stage
