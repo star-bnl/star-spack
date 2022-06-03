@@ -2,6 +2,9 @@
 
 ARG starenv=root6
 
+# Pick one from [gcc485, gcc11]
+ARG compiler=gcc485
+
 # Pick one from [os, bc]
 ARG baseimg=bc
 
@@ -10,19 +13,29 @@ ARG baseimg_bc=ghcr.io/star-bnl/star-spack:buildcache
 
 # This implements a switch for /opt/buildcache in buildcache-stage
 FROM ${baseimg_os} AS baseimg_os-stage
-RUN mkdir -p /opt/buildcache
+RUN mkdir -p /opt/buildcache # create dummy dir
 FROM ${baseimg_bc} AS baseimg_bc-stage
 FROM baseimg_${baseimg}-stage AS buildcache-stage
 
 
-FROM ${baseimg_os} AS build-stage
+# Install gcc485 (default)
+FROM ${baseimg_os} AS gcc485-prep-stage
+RUN yum install -y gcc gcc-c++ gcc-gfortran \
+ && mkdir -p /opt/rh # create dummy dir
 
-RUN yum update -q -y \
- && yum install -y \
-    gcc gcc-c++ gcc-gfortran \
-    git unzip make patch perl perl-Data-Dumper \
-    lapack-static blas-static imake motif-devel \
- && yum clean all
+# Install gcc11
+FROM ${baseimg_os} AS gcc11-prep-stage
+RUN curl -O http://mirror.centos.org/centos/7/extras/x86_64/Packages/centos-release-scl-rh-2-3.el7.centos.noarch.rpm \
+ && rpm -ivh centos-release-scl-rh-2-3.el7.centos.noarch.rpm \
+ && yum install -y devtoolset-11 \
+ && echo "source /opt/rh/devtoolset-11/enable" >> /etc/bashrc
+
+
+FROM ${compiler}-prep-stage AS build-stage
+
+RUN yum install -y git unzip make patch \
+    perl perl-Data-Dumper \
+    lapack-static blas-static imake motif-devel
 
 # Install cernlib
 RUN mkdir /cern && cd /cern \
@@ -42,7 +55,8 @@ ARG starenv
 COPY --from=buildcache-stage /opt/buildcache /opt/buildcache
 
 COPY --chmod=0755 <<-"EOF" dostarenv.sh
-	#!/bin/bash
+	#!/bin/bash -l
+	set -e
 	source star-spack/setup.sh
 	rm -f $HOME/.spack/mirrors.yaml
 	spack mirror add buildcache /opt/buildcache
@@ -73,6 +87,8 @@ FROM ${baseimg_os} AS starenv-stage
 ARG starenv
 
 COPY --from=build-stage /cern /cern
+COPY --from=build-stage /etc/bashrc /etc/bashrc
+COPY --from=build-stage /opt/rh /opt/rh
 COPY --from=build-stage /opt/software /opt/software
 COPY --from=build-stage /star-spack/spack/var/spack/environments/${starenv}/loads /etc/profile.d/z10_load_spack_env_modules.sh
 COPY --from=build-stage /star-spack/spack/share/spack/modules/linux-scientific7-x86_64 /opt/linux-scientific7-x86_64
