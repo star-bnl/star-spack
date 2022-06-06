@@ -88,7 +88,6 @@ ARG starenv
 
 COPY --from=build-stage /cern /cern
 COPY --from=build-stage /etc/bashrc /etc/bashrc
-COPY --from=build-stage /opt/rh /opt/rh
 COPY --from=build-stage /opt/software /opt/software
 COPY --from=build-stage /star-spack/spack/var/spack/environments/${starenv}/loads /etc/profile.d/z10_load_spack_env_modules.sh
 COPY --from=build-stage /star-spack/spack/share/spack/modules/linux-scientific7-x86_64 /opt/linux-scientific7-x86_64
@@ -104,6 +103,11 @@ RUN yum update -q -y \
     libX11-devel libXext-devel libXpm-devel libXt-devel \
     python python-pip \
     environment-modules \
+ && yum clean all
+
+RUN curl -O http://mirror.centos.org/centos/7/extras/x86_64/Packages/centos-release-scl-rh-2-3.el7.centos.noarch.rpm \
+ && rpm -ivh centos-release-scl-rh-2-3.el7.centos.noarch.rpm \
+ && yum install -y devtoolset-11 \
  && yum clean all
 
 # Install extra python modules used by the STAR software
