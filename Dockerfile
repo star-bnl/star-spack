@@ -85,6 +85,7 @@ RUN find -L /opt/software/* -type f -exec readlink -f '{}' \; | \
 FROM ${baseimg_os} AS starenv-stage
 
 ARG starenv
+ARG compiler
 
 COPY --from=build-stage /cern /cern
 COPY --from=build-stage /etc/bashrc /etc/bashrc
@@ -119,7 +120,7 @@ ENV CERN=/cern
 ENV CERN_LEVEL=pro
 ENV CERN_ROOT=$CERN/$CERN_LEVEL
 ENV OPTSTAR=/opt/software
-ENV STAR_HOST_SYS=sl79_gcc485
+ENV STAR_HOST_SYS=sl79_${compiler}
 ENV PATH=$CERN_ROOT/bin:$PATH
 ENV LIBPATH+=:/lib64:/lib
 
