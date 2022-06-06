@@ -38,12 +38,10 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build and cache build-stage
+      - name: Build container
         uses: docker/build-push-action@v3
         with:
           context: .
-          cache-from: type=registry,ref=ghcr.io/star-bnl/star-spack:cache-${{ matrix.starenv }}-${{ matrix.compiler }}
-          cache-to:   type=registry,ref=ghcr.io/star-bnl/star-spack:cache-${{ matrix.starenv }}-${{ matrix.compiler }},mode=max
           build-args: |
             starenv=${{ matrix.starenv }}
             compiler=${{ matrix.compiler }}
