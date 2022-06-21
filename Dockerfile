@@ -33,6 +33,9 @@ RUN curl -O http://mirror.centos.org/centos/7/extras/x86_64/Packages/centos-rele
 
 FROM ${compiler}-prep-stage AS build-stage
 
+# The shell command allows to pick up the changes in /etc/bashrc
+SHELL ["/bin/bash", "--login", "-c"]
+
 RUN yum install -y git unzip make patch \
     perl perl-Data-Dumper \
     lapack-static blas-static imake motif-devel
