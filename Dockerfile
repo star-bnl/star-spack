@@ -42,7 +42,7 @@ RUN yum install -y git unzip make patch \
 
 # Install cernlib
 RUN mkdir /cern && cd /cern \
- && curl -sL https://github.com/psilib/cernlib/archive/centos7.tar.gz | tar -xz --strip-components 1 \
+ && curl -sL https://github.com/psilib/cernlib/archive/9d59c54d.tar.gz | tar -xz --strip-components 1 \
  && ./build_cernlib.sh \
  && mv /usr/lib64/libblas.a   /cern/2006/lib/libblas.a \
  && mv /usr/lib64/liblapack.a /cern/2006/lib/liblapack3.a \
