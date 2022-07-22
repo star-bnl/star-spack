@@ -23,7 +23,8 @@ spack:
     - root@5.34.38 ~python +table
     - star-env
     - vc@0.7.4
-  concretization: together
+  concretizer:
+    unify: true
   packages:
     all:
       target: [x86_64]

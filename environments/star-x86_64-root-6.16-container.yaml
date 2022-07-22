@@ -22,7 +22,8 @@ spack:
     - root@6.16.00 +table
     - star-env
     - vc@1.4.1
-  concretization: together
+  concretizer:
+    unify: true
   packages:
     all:
       target: [x86_64]

@@ -9,7 +9,8 @@ spack:
   specs:
     - vc@1.4.1
     - vc@0.7.4
-  concretization: separately
+  concretizer:
+    unify: false
   packages:
     all:
       target: [x86_64]
