@@ -31,7 +31,8 @@ spack:
     - star-env
     - star-table
     - vc@1.4.1
-  concretization: together
+  concretizer:
+    unify: true
   packages:
     all:
       target: [x86_64]
