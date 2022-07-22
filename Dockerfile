@@ -51,7 +51,7 @@ RUN mkdir /cern && cd /cern \
 
 COPY . star-spack
 
-RUN mkdir -p star-spack/spack && curl -sL https://github.com/spack/spack/archive/v0.17.2.tar.gz | tar -xz --strip-components 1 -C star-spack/spack
+RUN mkdir -p star-spack/spack && curl -sL https://github.com/spack/spack/archive/v0.18.1.tar.gz | tar -xz --strip-components 1 -C star-spack/spack
 
 ARG starenv
 
