@@ -6,7 +6,7 @@ class StarEnv(BundlePackage):
 
     homepage = "https://github.com/star-bnl/star-spack/"
 
-    version('0.1.7')
+    version('0.2.0')
 
     depends_on('boost')
     depends_on('eigen')
