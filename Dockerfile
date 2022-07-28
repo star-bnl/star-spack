@@ -74,8 +74,11 @@ COPY --chmod=0755 <<-"EOF" dostarenv.sh
 EOF
 
 RUN ./dostarenv.sh star-x86_64-loose && ./dostarenv.sh ${starenv}
-# Manually append specific vc module to loads
-RUN /bin/bash -c "source star-spack/setup.sh; spack -e star-x86_64-loose module tcl loads vc@0.7.4" >> /star-spack/spack/var/spack/environments/${starenv}/loads
+# Manually append specific modules to loads
+RUN <<-EOF
+	source star-spack/setup.sh
+	spack -e star-x86_64-loose module tcl loads py-pyparsing@2.2 python@2.7 vc@0.7.4 >> /star-spack/spack/var/spack/environments/${starenv}/loads
+EOF
 
 # Strip all the binaries
 RUN find -L /opt/software/* -type f -exec readlink -f '{}' \; | \
@@ -96,16 +99,13 @@ COPY --from=build-stage /opt/software /opt/software
 COPY --from=build-stage /star-spack/spack/var/spack/environments/${starenv}/loads /etc/profile.d/z10_load_spack_env_modules.sh
 COPY --from=build-stage /star-spack/spack/share/spack/modules/linux-scientific7-x86_64 /opt/linux-scientific7-x86_64
 
-# epel repo is for python-pip only
 RUN yum update -q -y \
- && yum install -y epel-release \
  && yum install -y \
     binutils gcc gcc-c++ gcc-gfortran \
     git bzip2 file which make patch \
     bison byacc flex flex-devel libcurl-devel \
     perl perl-Env perl-Digest-MD5 \
     libX11-devel libXext-devel libXpm-devel libXt-devel \
-    python python-pip \
     environment-modules \
  && yum clean all
 
@@ -113,9 +113,6 @@ RUN curl -O http://mirror.centos.org/centos/7/extras/x86_64/Packages/centos-rele
  && rpm -ivh centos-release-scl-rh-2-3.el7.centos.noarch.rpm \
  && yum install -y devtoolset-11 \
  && yum clean all
-
-# Install extra python modules used by the STAR software
-RUN pip install pyparsing==2.2.0
 
 ENV MODULEPATH=/opt/linux-scientific7-x86_64
 ENV USE_64BITS=1
