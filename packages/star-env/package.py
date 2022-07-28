@@ -18,6 +18,7 @@ class StarEnv(BundlePackage):
     depends_on('log4cxx')
     depends_on('mysql')
     depends_on('python')
+    depends_on('py-pyparsing')
     depends_on('rave')
     depends_on('root')
     depends_on('vc')
