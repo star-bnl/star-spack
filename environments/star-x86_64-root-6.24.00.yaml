@@ -4,7 +4,7 @@
 # configuration settings.
 spack:
   include:
-    - $spack/../environments/packages_gcc-4.8.5.yaml
+    - $spack/../environments/packages.yaml
     - $spack/../environments/modules.yaml
   specs:
     - boost
