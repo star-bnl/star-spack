@@ -31,19 +31,19 @@ RUN curl -O http://mirror.centos.org/centos/7/extras/x86_64/Packages/centos-rele
 
 FROM ${compiler}-prep-stage AS build-stage
 
-COPY . star-spack
+COPY . /star-spack
 
-RUN mkdir -p star-spack/spack && curl -sL https://github.com/spack/spack/archive/v0.18.1.tar.gz | tar -xz --strip-components 1 -C star-spack/spack
+RUN mkdir -p /star-spack/spack && curl -sL https://github.com/spack/spack/archive/v0.18.1.tar.gz | tar -xz --strip-components 1 -C /star-spack/spack
 
 # Create or add packages to /opt/buildcache
 COPY --chmod=0755 <<-"EOF" dostarenv.sh
 	#!/bin/bash -l
 	set -e
-	source star-spack/setup.sh
+	source /star-spack/setup.sh
 	rm -f $HOME/.spack/mirrors.yaml
 	spack mirror add buildcache /opt/buildcache
 	spack buildcache update-index -d /opt/buildcache
-	spack env create ${1} star-spack/environments/${1}.yaml
+	spack env create ${1} /star-spack/environments/${1}.yaml
 	spack env activate ${1}
 	spack --insecure install --no-check-signature
 	spack buildcache create -d /opt/buildcache --unsigned --allow-root $(spack find --no-groups --format "/{hash}")

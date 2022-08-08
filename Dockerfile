@@ -49,9 +49,9 @@ RUN mkdir /cern && cd /cern \
  && ln -s 2006 /cern/pro \
  && rm -fr /cern/2006/src /cern/2006/build
 
-COPY . star-spack
+COPY . /star-spack
 
-RUN mkdir -p star-spack/spack && curl -sL https://github.com/spack/spack/archive/v0.18.1.tar.gz | tar -xz --strip-components 1 -C star-spack/spack
+RUN mkdir -p /star-spack/spack && curl -sL https://github.com/spack/spack/archive/v0.18.1.tar.gz | tar -xz --strip-components 1 -C /star-spack/spack
 
 ARG starenv
 
@@ -60,11 +60,11 @@ COPY --from=buildcache-stage /opt/buildcache /opt/buildcache
 COPY --chmod=0755 <<-"EOF" dostarenv.sh
 	#!/bin/bash -l
 	set -e
-	source star-spack/setup.sh
+	source /star-spack/setup.sh
 	rm -f $HOME/.spack/mirrors.yaml
 	spack mirror add buildcache /opt/buildcache
 	spack buildcache update-index -d /opt/buildcache
-	spack env create ${1} star-spack/environments/${1}.yaml
+	spack env create ${1} /star-spack/environments/${1}.yaml
 	spack env activate ${1}
 	spack --insecure install --no-check-signature
 	spack gc -y
@@ -76,7 +76,7 @@ EOF
 RUN ./dostarenv.sh star-x86_64-loose && ./dostarenv.sh ${starenv}
 # Manually append specific modules to loads
 RUN <<-EOF
-	source star-spack/setup.sh
+	source /star-spack/setup.sh
 	spack -e star-x86_64-loose module tcl loads py-pyparsing@2.2 python@2.7 vc@0.7.4 >> /star-spack/spack/var/spack/environments/${starenv}/loads
 EOF
 
