@@ -27,7 +27,7 @@ spack:
     - mesa
     - mysql
     - rave
-    - root@6.24.00
+    - root@6.24.06
     - star-env
     - star-table
     - vc@1.4.1
