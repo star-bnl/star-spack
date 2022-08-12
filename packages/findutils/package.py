@@ -73,3 +73,9 @@ class Findutils(AutotoolsPackage, GNUMirrorPackage):
         output = Executable(exe)('--version', output=str, error=str)
         match = re.search(r'find \(GNU findutils\)\s+(\S+)', output)
         return match.group(1) if match else None
+
+    def configure_args(self):
+        config_args = []
+        if self.spec.target == 'x86':
+            config_args.append('--disable-year2038')
+        return config_args
