@@ -8,8 +8,6 @@ packages:
   binutils:
     version: [2.36.1]
     variants: +plugins
-  ftgl: {}
-  krb5: {}
   mesa:
     variants: ~llvm
     version: [20.2.1]
