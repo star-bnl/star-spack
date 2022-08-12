@@ -17,7 +17,7 @@ spack:
     - libxml2
     - log4cxx
     - lz4
-    - mesa
+    - mesa ^libunwind@1.5.0
     - mysql
     - rave
     - root@5.34.38 ~python +table
