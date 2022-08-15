@@ -26,16 +26,6 @@ class Libpng(AutotoolsPackage):
 
     depends_on('zlib@1.0.4:')  # 1.2.5 or later recommended
 
-    def configure_args(self):
-        args = [
-            # not honored, see
-            #   https://sourceforge.net/p/libpng/bugs/210/#33f1
-            # '--with-zlib=' + self.spec['zlib'].prefix,
-            'CPPFLAGS={0}'.format(self.spec['zlib'].headers.include_flags),
-            'LDFLAGS={0}'.format(self.spec['zlib'].libs.search_flags)
-        ]
-        return args
-
     def check(self):
         # Libpng has both 'check' and 'test' targets that are aliases.
         # Only need to run the tests once.
