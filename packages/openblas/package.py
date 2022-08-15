@@ -239,9 +239,6 @@ class Openblas(MakefilePackage):
                 arch_name = openblas_arch_map.get(arch_name, arch_name)
                 args.append('ARCH=' + arch_name)
 
-        if self.spec.target == 'x86':
-            args.append('FEXTRALIB=-L/usr/lib')
-
         if microarch.vendor == 'generic' and microarch.name != 'riscv64':
             # User requested a generic platform, or we couldn't find a good
             # match for the requested one. Allow OpenBLAS to determine
@@ -290,6 +287,13 @@ class Openblas(MakefilePackage):
             make_defs.append('MAKE_NO_J=1')  # flag defined by our make.patch
         else:
             make_defs.append('MAKE_NB_JOBS=0')  # flag provided by OpenBLAS
+
+        if self.spec.target == 'x86':
+            make_defs.extend([
+                'CFLAGS=-m32',
+                'FFLAGS=-m32',
+                'FEXTRALIB=-L/usr/lib'
+            ])
 
         # Add target and architecture flags
         make_defs += self._microarch_target_args()
