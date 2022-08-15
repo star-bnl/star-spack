@@ -52,5 +52,8 @@ class Pcre(AutotoolsPackage):
 
         if self.spec.target == 'x86':
             args.append('--build=i686')
+            args.append('--host=i686-pc-linux')
+            args.append('CFLAGS=-m32')
+            args.append('CXXFLAGS=-m32')
 
         return args
