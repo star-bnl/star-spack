@@ -99,4 +99,6 @@ class Libtiff(AutotoolsPackage):
         if self.spec.satisfies('@4.0.10:'):
             args += self.enable_or_disable('zstd')
             args += self.enable_or_disable('webp')
+        if self.spec.target == 'x86':
+            args.append('--build=i686')
         return args
