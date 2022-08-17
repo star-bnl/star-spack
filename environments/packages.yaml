@@ -1,6 +1,4 @@
 packages:
-  python:
-    version: [3.8.9, 2.7.18]
   log4cxx:
     version: [0.10.0]
   eigen:
@@ -38,3 +36,5 @@ packages:
     version: [01-10-star-1]
   kfparticle:
     version: [1.1]
+  davix:
+    version: [0.7.5]
