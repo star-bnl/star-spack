@@ -1,0 +1,20 @@
+# This is a Spack Environment file.
+#
+# It describes a set of packages to be installed, along with
+# configuration settings.
+spack:
+  include:
+    - $spack/../environments/packages.yaml
+    - $spack/../environments/modules.yaml
+  specs:
+    - python@2.7
+    - python@3.8 ^libffi@3.2.1
+    - py-pyparsing@2.2.0
+    - vc@1.4.1
+    - vc@0.7.4
+  concretizer:
+    unify: false
+  packages:
+    all:
+      target: [x86]
+  view: false
