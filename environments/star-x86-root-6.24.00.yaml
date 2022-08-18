@@ -16,7 +16,6 @@ spack:
     - kitrack
     - libxml2
     - log4cxx
-    - mesa ^libunwind@1.5.0
     - mysql
     - rave
     - root@6.24.06
