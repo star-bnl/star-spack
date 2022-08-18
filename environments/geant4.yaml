@@ -7,24 +7,14 @@ spack:
     - $spack/../environments/packages.yaml
     - $spack/../environments/modules.yaml
   specs:
-    - boost
-    - eigen
-    - fastjet
-    - genfit
-    - gsl
-    - kfparticle
-    - kitrack
-    - libxml2
-    - log4cxx
-    - mysql
-    - rave
-    - root@6.24.06
-    - star-env
-    - star-table
-    - vc@1.4.1
+    - clhep
+    - g4ensdfstate@2.2
+    - g4neutronxs@1.4
+    - g4photonevaporation@5.2
+    - g4saiddata@1.1
+    - geant4
+    - geant4-vmc
+    - lhapdf
   concretizer:
     unify: true
-  packages:
-    all:
-      target: [x86_64]
   view: false
