@@ -43,6 +43,7 @@ class Mesa(MesonPackage):
     depends_on('python@3:', type='build')
     depends_on('py-mako@0.8.0:', type='build')
     depends_on('libunwind')
+    depends_on('libunwind@:1.5', when='%gcc@4.8.5')
     depends_on('expat')
     depends_on('zlib@1.2.3:')
 
