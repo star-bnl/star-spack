@@ -24,7 +24,6 @@ spack:
     - libxml2
     - lhapdf
     - log4cxx
-    - mesa ^libunwind@1.5.0
     - mysql
     - rave
     - root@6.24.06
