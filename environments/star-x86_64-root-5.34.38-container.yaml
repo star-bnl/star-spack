@@ -16,7 +16,6 @@ spack:
     - kitrack
     - libxml2
     - log4cxx
-    - lz4
     - mesa
     - mysql
     - rave
