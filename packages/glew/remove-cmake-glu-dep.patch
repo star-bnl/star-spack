@@ -1,0 +1,12 @@
+diff -r -u a/build/cmake/CMakeLists.txt b/build/cmake/CMakeLists.txt
+--- a/build/cmake/CMakeLists.txt
++++ b/build/cmake/CMakeLists.txt
+@@ -54,7 +54,7 @@
+   set (DLL_PREFIX lib)
+ endif ()
+
+-set (GLEW_LIBRARIES ${OPENGL_LIBRARIES} ${X11_LIBRARIES})
++set (GLEW_LIBRARIES ${OPENGL_gl_LIBRARY} ${X11_LIBRARIES})
+
+ add_definitions (-DGLEW_NO_GLU)
+
