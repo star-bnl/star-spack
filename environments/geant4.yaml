@@ -14,7 +14,6 @@ spack:
     - g4saiddata@1.1
     - geant4
     - geant4-vmc
-    - lhapdf
   concretizer:
     unify: true
   view: false
