@@ -51,7 +51,9 @@ modules:
       hash_length: 0
       projections:
         all: '{name}-{version}'
-        ^root: '{name}-{^root.name}-{^root.version}'
+        root: '{name}-{version}'
+        ^root: '{name}-{version}-{^root.name}-{^root.version}'
+        ^python: '{name}-{version}-{^python.name}-{^python.version}'
 
     # Default configurations if lmod is enabled
     lmod:
