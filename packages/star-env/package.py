@@ -12,6 +12,7 @@ class StarEnv(BundlePackage):
     depends_on('eigen')
     depends_on('fastjet')
     depends_on('genfit')
+    depends_on('gsl')
     depends_on('kfparticle')
     depends_on('kitrack')
     depends_on('libxml2')
