@@ -23,7 +23,7 @@ class StarEnv(BundlePackage):
     depends_on('rave')
     depends_on('root')
     depends_on('vc')
-    depends_on('star-table', when='^root@6.18.00:')
+    depends_on('star-table', when='root@6.18:')
 
     def setup_run_environment(self, env):
         # Set env variable used by STAR cons
