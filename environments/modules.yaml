@@ -47,7 +47,12 @@ modules:
 
     tcl:
       all:
+        autoload: none
+      star-env:
         autoload: direct
+        load:
+          - python-2.7.18
+          - py-pyparsing-2.2.0-python-2.7.18
       hash_length: 0
       projections:
         all: '{name}-{version}'
