@@ -73,6 +73,12 @@ COPY --chmod=0755 <<-"EOF" dostarenv.sh
 	spack env deactivate
 EOF
 
+COPY <<"EOF" /root/.spack/config.yaml
+config:
+  install_tree:
+    root: /opt/software
+EOF
+
 RUN ./dostarenv.sh star-x86_64-loose && ./dostarenv.sh ${starenv}
 # Manually append specific modules to loads
 RUN <<-EOF
