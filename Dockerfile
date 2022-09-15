@@ -62,6 +62,7 @@ COPY --chmod=0755 <<-"EOF" dostarenv.sh
 	set -e
 	source /star-spack/setup.sh
 	rm -f $HOME/.spack/mirrors.yaml
+	spack compiler add $(dirname $(which gcc))
 	spack mirror add buildcache /opt/buildcache
 	spack buildcache update-index -d /opt/buildcache
 	spack env create ${1} /star-spack/environments/${1}.yaml
