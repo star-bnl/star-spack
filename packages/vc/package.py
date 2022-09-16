@@ -28,3 +28,7 @@ class Vc(CMakePackage):
             return ['-DBUILD_TESTING=ON']
         else:
             return ['-DBUILD_TESTING=OFF']
+
+    def setup_run_environment(self, env):
+        # Set env variable used by STAR cons
+        env.set('Vc_DIR', self.spec.prefix)

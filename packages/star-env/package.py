@@ -28,4 +28,3 @@ class StarEnv(BundlePackage):
     def setup_run_environment(self, env):
         # Set env variable used by STAR cons
         env.set('USE_64BITS', '0' if self.spec.target == 'x86' else '1')
-        env.set('Vc_DIR', self.spec['vc'].prefix)
