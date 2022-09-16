@@ -20,7 +20,7 @@ spack:
     - rave
     - root@6.16.00 +table
     - star-env
-    - vc@1.4.1
+    - vc@0.7.4
   concretizer:
     unify: true
   packages:
