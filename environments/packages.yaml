@@ -17,8 +17,10 @@ packages:
   mysql:
     variants: cxxstd=11
     version: [5.7.27]
-  openblas: 
+  openblas:
     version: [0.3.10]
+  rave:
+    version: ['2020-08-11']
   root:
     variants: +vc +fftw +mlp +mysql +pythia6 +roofit +tmva +vdt +vmc +spectrum
   star-table:
