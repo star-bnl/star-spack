@@ -84,7 +84,7 @@ RUN ./dostarenv.sh star-x86_64-loose && ./dostarenv.sh ${starenv}
 # Manually append specific modules to loads
 RUN <<-EOF
 	source /star-spack/setup.sh
-	spack -e star-x86_64-loose module tcl loads py-pyparsing@2.2 python@2.7 vc@0.7.4 >> /star-spack/spack/var/spack/environments/${starenv}/loads
+	spack -e star-x86_64-loose module tcl loads py-pyparsing@2.2 python@2.7 vc@0.7.4 libiconv >> /star-spack/spack/var/spack/environments/${starenv}/loads
 EOF
 
 # Strip all the binaries
