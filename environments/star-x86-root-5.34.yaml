@@ -19,7 +19,7 @@ spack:
     - mysql
     - rave
     - root@5.34.38 +table
-    - star-env
+    - star-env@0.2.3
     - vc@0.7.4
   concretizer:
     unify: true
