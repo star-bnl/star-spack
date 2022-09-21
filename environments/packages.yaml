@@ -41,4 +41,4 @@ packages:
   davix:
     version: [0.7.5]
   star-env:
-    version: [0.2.2]
+    version: [0.2.3]
