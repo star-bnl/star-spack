@@ -5,6 +5,12 @@ packages:
   boost:
     variants: cxxstd=11
     version: [1.59.0]
+  catch2:
+    version: [2.13.8]
+  ccache:
+    version: [4.3]
+  cmake:
+    version: [3.23.1]
   davix:
     version: [0.7.5]
   eigen:
@@ -16,6 +22,8 @@ packages:
   genfit:
     version: [02-00-00]
     variants: +rave
+  git:
+    version: [2.35.2]
   kfparticle:
     version: [1.1]
   kitrack:
