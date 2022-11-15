@@ -1,19 +1,32 @@
 packages:
-  log4cxx:
-    version: [0.10.0]
-  eigen:
-    version: [3.3.9]
   binutils:
     version: [2.36.1]
     variants: +plugins
-  mesa:
-    variants: ~llvm
-    version: [20.2.1]
   boost:
     variants: cxxstd=11
     version: [1.59.0]
+  davix:
+    version: [0.7.5]
+  eigen:
+    version: [3.3.9]
+  geant4:
+    version: [10.4.0]
+  geant4-vmc:
+    version: [4-0-p3]
+  genfit:
+    version: [02-00-00]
+    variants: +rave
+  kfparticle:
+    version: [1.1]
+  kitrack:
+    version: [01-10-star-1]
   llvm:
     version: [7.1.0]
+  log4cxx:
+    version: [0.10.0]
+  mesa:
+    variants: ~llvm
+    version: [20.2.1]
   mysql:
     variants: cxxstd=11
     version: [5.7.27]
@@ -23,22 +36,9 @@ packages:
     version: ['2020-08-11']
   root:
     variants: +vc +fftw +mlp +mysql +pythia6 +roofit +tmva +vdt +vmc +spectrum
-  star-table:
-    version: [0.1.0]
-  geant4:
-    version: [10.4.0]
-  vmc:
-    version: [1-0-p3]
-  geant4-vmc:
-    version: [4-0-p3]
-  genfit:
-    version: [02-00-00]
-    variants: +rave
-  kitrack:
-    version: [01-10-star-1]
-  kfparticle:
-    version: [1.1]
-  davix:
-    version: [0.7.5]
   star-env:
     version: [0.2.3]
+  star-table:
+    version: [0.1.0]
+  vmc:
+    version: [1-0-p3]
