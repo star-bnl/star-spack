@@ -79,7 +79,9 @@ config:
     root: /opt/software
 EOF
 
-RUN ./dostarenv.sh star-x86_64-loose && ./dostarenv.sh ${starenv}
+RUN ./dostarenv.sh star-utils
+RUN ./dostarenv.sh star-x86_64-loose
+RUN ./dostarenv.sh ${starenv}
 # Manually append specific modules to loads
 RUN <<-EOF
 	source /star-spack/setup.sh
