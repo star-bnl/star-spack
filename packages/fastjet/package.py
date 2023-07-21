@@ -61,10 +61,15 @@ class Fastjet(AutotoolsPackage):
 
     patch('atlas.patch', when='+atlas', level=0)
 
+    def setup_build_environment(self, env):
+        if self.spec.target == 'x86':
+            env.append_flags('CXXFLAGS', '-m32')
+            env.append_flags('LDFLAGS', '-m32')
+
     def configure_args(self):
         extra_args = ["--enable-allplugins"]
         if self.spec.target == 'x86':
-            extra_args.extend(['--build=i686', 'LDFLAGS=-m32'])
+            extra_args.extend(['--build=i686', '--host=x86_64-none-linux'])
         extra_args += self.enable_or_disable('shared')
         extra_args += self.enable_or_disable('auto-ptr')
 
