@@ -88,6 +88,7 @@ compilers:
       cflags: -m32
       cxxflags: -m32
       fflags: -m32
+      ldflags: -m32
     operating_system: rhel7
     target: x86
     modules: []
