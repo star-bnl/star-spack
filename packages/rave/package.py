@@ -28,6 +28,9 @@ class Rave(AutotoolsPackage):
 
     def setup_build_environment(self, env):
         env.append_flags('CXXFLAGS', "-std=c++11 -O2")
+        if self.spec.target == 'x86':
+            env.append_flags('CXXFLAGS', '-m32')
+            env.append_flags('LDFLAGS', '-m32')
 
     def configure_args(self):
         args = [
@@ -36,6 +39,6 @@ class Rave(AutotoolsPackage):
         ]
 
         if self.spec.target == 'x86':
-            args.extend(['--build=i686', 'LDFLAGS=-m32'])
+            args.extend(['--build=i686', '--host=x86_64-none-linux'])
 
         return args
