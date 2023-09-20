@@ -16,6 +16,7 @@ class StarEnv(BundlePackage):
     depends_on('kfparticle')
     depends_on('kitrack')
     depends_on('libxml2')
+    depends_on('libiconv')
     depends_on('log4cxx')
     depends_on('mysql')
     depends_on('python')
@@ -23,7 +24,7 @@ class StarEnv(BundlePackage):
     depends_on('rave')
     depends_on('root')
     depends_on('vc')
-    depends_on('star-table', when='root@6.18:')
+    depends_on('zlib')
 
     def setup_run_environment(self, env):
         # Set env variable used by STAR cons
