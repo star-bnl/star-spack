@@ -18,9 +18,9 @@ spack:
     - log4cxx
     - mysql
     - rave
-    - root@6.24.06
+    - root@6.24.06 ~vc
     - star-env@0.2.3
-    - vc@1.4.1
+    - vc@0.7.4
   concretizer:
     unify: true
   packages:

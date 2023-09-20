@@ -9,3 +9,4 @@ class Kfparticle(CMakePackage):
 
     depends_on('cmake', type='build')
     depends_on('root')
+    depends_on('vc@0.7.4')
