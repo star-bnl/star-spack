@@ -21,6 +21,7 @@ spack:
     - root@5.34.38 +table
     - star-env@0.2.3
     - vc@0.7.4
+    - zlib
   concretizer:
     unify: true
   packages:
