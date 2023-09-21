@@ -18,7 +18,7 @@ spack:
     - log4cxx
     - mysql
     - rave
-    - root@6.16.00 +table
+    - root@6.16.00
     - star-env@0.2.3
     - vc@1.4.1
   concretizer:
