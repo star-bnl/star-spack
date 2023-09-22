@@ -674,3 +674,21 @@ class Root(CMakePackage):
         env.prepend_path('ROOT_INCLUDE_PATH', dependent_spec.prefix.include)
         if "+rpath" not in self.spec:
             env.prepend_path('LD_LIBRARY_PATH', self.prefix.lib)
+
+    @run_after('install')
+    def update_system_rootrc(self):
+        rootrc = self.prefix + '/etc/system.rootrc'
+
+        filter_file('Rint.Logon',  '#Rint.Logon', rootrc)
+        filter_file('Rint.Logoff', '#Rint.Logoff', rootrc)
+        filter_file('Unix.\*.Root.DynamicPath', '#Unix.*.Root.DynamicPath', rootrc)
+        filter_file('Unix.\*.Root.MacroPath',   '#Unix.*.Root.MacroPath', rootrc)
+
+        append_txt = "\n" \
+                     "Rint.Logon:                 $(STAR)/StRoot/macros/rootlogon.C\n" \
+                     "Rint.Logoff:                $(STAR)/StRoot/macros/rootlogoff.C\n" \
+                     "Unix.*.Root.DynamicPath:    .:$(STAR_LIB):$(ROOTSYS)/lib\n" \
+                     "Unix.*.Root.MacroPath:      .:./StRoot/macros:./StRoot/macros/graphics:./StRoot/macros/analysis:./StRoot/macros/test:./StRoot/macros/examples:./StRoot/macros/html:./StRoot/macros/qa:./StRoot/macros/calib:./StRoot/macros/mudst:$(STAR)/StRoot/macros:$(STAR)/StRoot/macros/graphics:$(STAR)/StRoot/macros/analysis:$(STAR)/StRoot/macros/test:$(STAR)/StRoot/macros/examples:$(STAR)/StRoot/macros/html:$(STAR)/StRoot/macros/qa:$(STAR)/StRoot/macros/calib:$(STAR)/StRoot/macros/mudst:$(ROOTSYS)/macros:\n"
+
+        with open(rootrc, 'a') as f:
+            f.write(append_txt)
