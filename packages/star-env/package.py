@@ -24,6 +24,7 @@ class StarEnv(BundlePackage):
     depends_on('rave')
     depends_on('root')
     depends_on('vc@0.7.4')
+    depends_on('star-table', when='root@6.16:')
     depends_on('zlib')
 
     def setup_run_environment(self, env):
