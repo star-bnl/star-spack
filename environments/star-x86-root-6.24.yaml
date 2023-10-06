@@ -12,7 +12,6 @@ spack:
     - fastjet
     - genfit
     - gsl
-    - kfparticle
     - kitrack
     - libxml2
     - log4cxx
