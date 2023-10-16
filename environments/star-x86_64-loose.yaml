@@ -7,6 +7,10 @@ spack:
     - $spack/../environments/packages.yaml
     - $spack/../environments/modules.yaml
   specs:
+    - python@2.7 ^libffi@3.2.1
+    - python@3.6 ^libffi@3.2.1
+    - python@3.8 ^libffi@3.2.1
+    - py-pyparsing@2.2.0 ^python@2.7 ^libffi@3.2.1
     - vc@1.4.1
     - vc@0.7.4
   concretizer:
