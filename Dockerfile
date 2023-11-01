@@ -68,7 +68,6 @@ COPY --chmod=0755 <<-"EOF" dostarenv.sh
 	spack env create ${1} /star-spack/environments/${1}.yaml
 	spack env activate ${1}
 	spack --insecure install --no-check-signature --reuse
-	spack env loads --exclude vc
 	spack module tcl refresh -y
 	spack env deactivate
 EOF
@@ -82,10 +81,10 @@ EOF
 RUN ./dostarenv.sh star-utils
 RUN ./dostarenv.sh star-x86_64-loose
 RUN ./dostarenv.sh ${starenv}
-# Manually append specific modules to loads
+# Load only the umbrella star-env module
 RUN <<-EOF
 	source /star-spack/setup.sh
-	spack -e star-x86_64-loose module tcl loads py-pyparsing@2.2 python@2.7 vc@0.7.4 libiconv >> /star-spack/spack/var/spack/environments/${starenv}/loads
+	spack -e ${starenv} module tcl loads star-env >> /star-spack/spack/var/spack/environments/${starenv}/loads
 EOF
 
 # Strip all the binaries
