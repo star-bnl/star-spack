@@ -92,8 +92,8 @@ class Root(CMakePackage):
         # https://sft.its.cern.ch/jira/browse/ROOT-8226.
         patch('root6-60606-mathmore.patch', when='@6.06.06')
 
-    patch('https://github.com/root-project/root/commit/348f30a6a3b5905ef734a7bd318bc0ee8bca6dc9.diff', sha256='83334f07c204d1386ae1f20dac434ce1c8a2370a64dec36b29d8d895b998c305', level=1, when='@5.34 %gcc@9.0.0:')
-    patch('https://github.com/root-project/root/commit/3c243b18768d3c3501faf3ca4e4acfc071021350.diff', sha256='822a41c7fa254119dd227845ed9b90eeb85d2c1c20ce8dcd2fcb49e7cfd6cbfc', level=1, when='@5.34 %gcc@9.0.0:')
+    patch('https://github.com/root-project/root/commit/348f30a6a3b5905ef734a7bd318bc0ee8bca6dc9.diff', sha256='5b4af741abbe8710d8ac6d1b8019699d92e29b5b4038a663065b4461cb1f3523', level=1, when='@5.34 %gcc@9.0.0:')
+    patch('https://github.com/root-project/root/commit/3c243b18768d3c3501faf3ca4e4acfc071021350.diff', sha256='01153893292758b8639d4feb346f713e6460902d1a7ec98313c8566459f810e1', level=1, when='@5.34 %gcc@9.0.0:')
     patch('root5-asimage.patch', level=1, when='@5.34:6.16 %gcc@9:')
     patch('root6-61600-include-limits.patch', level=1, when='@6.16 %gcc@11:')
 
