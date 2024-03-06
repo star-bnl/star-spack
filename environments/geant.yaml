@@ -10,10 +10,13 @@ spack:
     - clhep
     - g4ensdfstate@2.2
     - g4neutronxs@1.4
-    - g4photonevaporation@5.2
-    - g4saiddata@1.1
-    - geant4
-    - geant4-vmc
+    - g4photonevaporation@5.3
+    - g4saiddata@2.0
+    - geant4@10.5.1
+    - geant4-vmc@5-0-p5
+    - geant3@3-9-p1
+    - root@6.24.06 ~vc ~vmc
+    - vmc@1-0-p3
   concretizer:
     unify: true
   view: false
