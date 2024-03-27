@@ -14,6 +14,8 @@ class Geant3(CMakePackage):
     url = "https://github.com/vmc-project/geant3/archive/v3-7.tar.gz"
 
     version("4-1", sha256="a1dcab7bc7a7493e4c78d7bec22cd816e79e40992bf9db0d616e2a0125fcdf50")
+    version("3-9-p1", sha256="5db67468f070b36d88c0ae14b734034f4bfb0ac1f227115f7a716801c4a53d0b")
+    version("3-9", sha256="df8503c336f4d9f7b621c999a679d7628015da485f806ac530b70dbf149bcf46")
     version("3-8", sha256="6ff6745eef59139d791bef043b405f6d515be1d98096cf4e82ac4c1f61f737dc")
     version("3-7", sha256="36cd57c6e5a54ff11e8687b30f54d774b676e06c55658cbc1ad787d1fadbe509")
     version("3-6", sha256="e2c8f2c8397431218f90e03cafe54aa0de0474536cb9de921573ca670abfd0e0")
