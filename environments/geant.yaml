@@ -4,6 +4,7 @@
 # configuration settings.
 spack:
   include:
+    - $spack/../environments/config.yaml
     - $spack/../environments/packages.yaml
     - $spack/../environments/modules.yaml
   specs:
