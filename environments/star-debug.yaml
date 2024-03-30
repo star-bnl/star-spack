@@ -1,0 +1,18 @@
+# This is a Spack Environment file.
+#
+# It describes a set of packages to be installed, along with
+# configuration settings.
+spack:
+  include:
+    - $spack/../environments/config.yaml
+    - $spack/../environments/packages.yaml
+    - $spack/../environments/modules-debug.yaml
+  specs:
+    - geant4@10.5.1 build_type=Debug
+    - geant4-vmc@5-0-p5 build_type=Debug
+    - geant3@3-9-p1 build_type=Debug
+    - root@6.24.06 ~vc ~vmc build_type=Debug
+    - vmc@1-0-p3 build_type=Debug
+  concretizer:
+    unify: true
+  view: false
