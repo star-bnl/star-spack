@@ -609,6 +609,10 @@ class Root(CMakePackage):
         options.append(define('TIFF_LIBRARY', spec['libtiff'].libs.joined(';')))
         options.append(define('GIF_DIR', spec['giflib'].prefix))
 
+        if self.spec.target == 'x86':
+            options.append(define('CMAKE_SHARED_LIBRARY_CREATE_CXX_FLAGS', '-m32'))
+            options.append(define('CMAKE_EXE_FLAGS', '-m32'))
+
         return options
 
     def setup_build_environment(self, env):
