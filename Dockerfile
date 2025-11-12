@@ -5,27 +5,22 @@ ARG starenv=root6
 # Pick one from [gcc485, gcc11]
 ARG compiler=gcc485
 
-# Pick one from [os, bc]
-ARG baseimg=bc
-
 ARG baseimg_os=scientificlinux/sl:7
-ARG baseimg_bc=ghcr.io/star-bnl/star-spack:buildcache
 
-# This implements a switch for /opt/buildcache in buildcache-stage
-FROM ${baseimg_os} AS baseimg_os-stage
-RUN mkdir -p /opt/buildcache # create dummy dir
-FROM ${baseimg_bc} AS baseimg_bc-stage
-FROM baseimg_${baseimg}-stage AS buildcache-stage
+# Install common packages
+FROM ${baseimg_os} AS base-stage
+
+RUN sed -i 's/scientificlinux.org\/linux\/scientific\//scientificlinux.org\/linux\/scientific\/obsolete\//g' /etc/yum.repos.d/*
+RUN yum install -y git unzip make patch perl perl-Data-Dumper
 
 
 # Install gcc485 (default)
-FROM ${baseimg_os} AS gcc485-prep-stage
-RUN sed -i 's/scientificlinux.org\/linux\/scientific\//scientificlinux.org\/linux\/scientific\/obsolete\//g' /etc/yum.repos.d/*
+FROM base-stage AS gcc485-prep-stage
 RUN yum install -y gcc gcc-c++ gcc-gfortran \
  && mkdir -p /opt/rh # create dummy dir
 
 # Install gcc11
-FROM ${baseimg_os} AS gcc11-prep-stage
+FROM base-stage AS gcc11-prep-stage
 
 COPY <<-"EOF" /etc/yum.repos.d/rocky-sclo-rh.repo
 [rocky-sclo-rh]
@@ -44,9 +39,7 @@ FROM ${compiler}-prep-stage AS build-stage
 # The shell command allows to pick up the changes in /etc/bashrc
 SHELL ["/bin/bash", "--login", "-c"]
 
-RUN yum install -y git unzip make patch \
-    perl perl-Data-Dumper \
-    lapack-static blas-static imake motif-devel
+RUN yum install -y lapack-static blas-static imake motif-devel
 
 # Install cernlib
 RUN mkdir /cern && cd /cern \
@@ -63,7 +56,7 @@ RUN mkdir -p /star-spack/spack && curl -sL https://github.com/spack/spack/archiv
 
 ARG starenv
 
-COPY --from=buildcache-stage /opt/buildcache /opt/buildcache
+COPY --from=ghcr.io/star-bnl/star-spack:buildcache /opt/buildcache /opt/buildcache
 
 COPY --chmod=0755 <<-"EOF" dostarenv.sh
 	#!/bin/bash -l
