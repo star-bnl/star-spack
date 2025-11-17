@@ -20,6 +20,7 @@ FROM baseimg_${baseimg}-stage AS buildcache-stage
 
 # Install gcc485 (default)
 FROM ${baseimg_os} AS gcc485-prep-stage
+RUN sed -i 's/scientificlinux.org\/linux\/scientific\//scientificlinux.org\/linux\/scientific\/obsolete\//g' /etc/yum.repos.d/*
 RUN yum install -y gcc gcc-c++ gcc-gfortran \
  && mkdir -p /opt/rh # create dummy dir
 
@@ -106,6 +107,7 @@ COPY --from=build-stage /opt/software /opt/software
 COPY --from=build-stage /star-spack/spack/var/spack/environments/${starenv}/loads /etc/profile.d/z10_load_spack_env_modules.sh
 COPY --from=build-stage /star-spack/spack/share/spack/modules/linux-scientific7-x86_64 /opt/linux-scientific7-x86_64
 
+RUN sed -i 's/scientificlinux.org\/linux\/scientific\//scientificlinux.org\/linux\/scientific\/obsolete\//g' /etc/yum.repos.d/*
 RUN yum update -q -y \
  && yum install -y \
     binutils gcc gcc-c++ gcc-gfortran \
