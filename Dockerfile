@@ -80,8 +80,7 @@ config:
     root: /opt/software
 EOF
 
-RUN --mount=type=cache,target=/spack-buildcache ./dostarenv.sh star-utils
-RUN --mount=type=cache,target=/spack-buildcache ./dostarenv.sh star-x86_64-loose
+RUN --mount=type=cache,target=/spack-buildcache ./dostarenv.sh star-loose
 RUN --mount=type=cache,target=/spack-buildcache ./dostarenv.sh ${starenv}
 # Load only the umbrella star-env module
 RUN <<-EOF
