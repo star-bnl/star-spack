@@ -68,7 +68,7 @@ COPY --chmod=0755 <<-"EOF" dostarenv.sh
 	spack env remove -y ${1} || true
 	spack env create ${1} /star-spack/environments/${1}.yaml
 	spack env activate ${1}
-	spack --insecure install --no-check-signature --reuse
+	spack --insecure install --no-check-signature || true
 	spack buildcache create --allow-root --unsigned --force --rebuild-index --directory /spack-buildcache $(spack find --no-groups --format "/{hash}")
 	spack module tcl refresh -y
 	spack env deactivate
