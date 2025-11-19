@@ -39,7 +39,7 @@ packages:
     variants: cxxstd=11
     version: [5.7.27]
   openblas:
-    version: [0.3.10]
+    version: [0.3.20]
   rave:
     version: ['2020-08-11']
   root:
