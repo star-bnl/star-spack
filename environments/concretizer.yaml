@@ -1,0 +1,6 @@
+concretizer:
+  unify: true
+  reuse: true
+  targets:
+    granularity: microarchitectures
+    host_compatible: true

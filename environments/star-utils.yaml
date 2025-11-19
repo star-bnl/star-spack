@@ -6,6 +6,7 @@ spack:
   include:
     - $spack/../environments/packages.yaml
     - $spack/../environments/modules.yaml
+    - $spack/../environments/concretizer.yaml
   specs:
     - catch2
     - ccache

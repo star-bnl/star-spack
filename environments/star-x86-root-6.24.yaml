@@ -6,6 +6,7 @@ spack:
   include:
     - $spack/../environments/packages.yaml
     - $spack/../environments/modules.yaml
+    - $spack/../environments/concretizer.yaml
   specs:
     - boost
     - eigen
@@ -22,8 +23,6 @@ spack:
     - star-env@0.3.0
     - star-table@0.1.1
     - vc@0.7.4
-  concretizer:
-    unify: true
   packages:
     all:
       target: [x86]
