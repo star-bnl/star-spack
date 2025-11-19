@@ -105,7 +105,7 @@ COPY --from=build-stage /cern /cern
 COPY --from=build-stage /etc/bashrc /etc/bashrc
 COPY --from=build-stage /opt/software /opt/software
 COPY --from=build-stage /star-spack/spack/var/spack/environments/${starenv}/loads /etc/profile.d/z10_load_spack_env_modules.sh
-COPY --from=build-stage /star-spack/spack/share/spack/modules/linux-scientific7-x86_64 /opt/linux-scientific7-x86_64
+COPY --from=build-stage /star-spack/spack/share/spack/modules/linux-scientific7-x86_64_v3 /opt/linux-scientific7-x86_64
 
 RUN sed -i 's/scientificlinux.org\/linux\/scientific\//scientificlinux.org\/linux\/scientific\/obsolete\//g' /etc/yum.repos.d/*
 RUN yum update -q -y \

@@ -2,5 +2,5 @@ concretizer:
   unify: true
   reuse: true
   targets:
-    granularity: microarchitectures
+    granularity: generic
     host_compatible: true
