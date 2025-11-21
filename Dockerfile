@@ -26,10 +26,17 @@ RUN yum install -y gcc gcc-c++ gcc-gfortran \
 
 # Install gcc11
 FROM ${baseimg_os} AS gcc11-prep-stage
-RUN curl -O http://mirror.centos.org/centos/7/extras/x86_64/Packages/centos-release-scl-rh-2-3.el7.centos.noarch.rpm \
- && rpm -ivh centos-release-scl-rh-2-3.el7.centos.noarch.rpm \
- && yum install -y devtoolset-11 \
- && echo "source /opt/rh/devtoolset-11/enable" >> /etc/bashrc
+
+COPY <<-"EOF" /etc/yum.repos.d/rocky-sclo-rh.repo
+[rocky-sclo-rh]
+name=Rocky Vault CentOS 7 SCLo rh
+baseurl=https://dl.rockylinux.org/vault/centos/7/sclo/$basearch/rh/
+enabled=1
+gpgcheck=0
+EOF
+
+RUN yum install -y devtoolset-11 \
+ && echo "source /opt/rh/devtoolset-11/enable" >> /etc/profile.d/z01_setup_compiler.sh
 
 
 FROM ${compiler}-prep-stage AS build-stage
@@ -116,11 +123,6 @@ RUN yum update -q -y \
     perl perl-Env perl-Digest-MD5 \
     libX11-devel libXext-devel libXpm-devel libXt-devel \
     environment-modules \
- && yum clean all
-
-RUN curl -O http://mirror.centos.org/centos/7/extras/x86_64/Packages/centos-release-scl-rh-2-3.el7.centos.noarch.rpm \
- && rpm -ivh centos-release-scl-rh-2-3.el7.centos.noarch.rpm \
- && yum install -y devtoolset-11 \
  && yum clean all
 
 ENV MODULEPATH=/opt/linux-scientific7-x86_64
