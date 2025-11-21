@@ -44,5 +44,7 @@ packages:
     version: ['2020-08-11']
   root:
     variants: +vc +fftw +mlp +mysql +pythia6 +roofit +tmva +vdt +spectrum
+  star-table:
+    version: [0.1.1]
   vmc:
     version: [1-0-p3]

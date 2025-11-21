@@ -21,7 +21,7 @@ spack:
     - rave
     - root@6.24.06 ~vc ~vmc
     - star-env@0.4.0
-    - star-table@0.1.1
+    - star-table
     - vc@0.7.4
     - vmc
   packages:
