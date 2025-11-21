@@ -64,6 +64,7 @@ COPY --chmod=0755 <<-"EOF" dostarenv.sh
 	spack compiler add $(dirname $(which gcc))
 	spack mirror add --scope site spack-buildcache file:///spack-buildcache || true
 	spack mirror list
+	spack config add 'config:install_tree:root:/opt/software'
 	spack env remove -y ${1} || true
 	spack env create ${1} /star-spack/environments/${1}.yaml
 	spack env activate ${1}
@@ -71,12 +72,6 @@ COPY --chmod=0755 <<-"EOF" dostarenv.sh
 	spack buildcache create --allow-root --unsigned --force --rebuild-index --directory /spack-buildcache $(spack find --no-groups --format "/{hash}")
 	spack module tcl refresh -y
 	spack env deactivate
-EOF
-
-COPY <<"EOF" /root/.spack/config.yaml
-config:
-  install_tree:
-    root: /opt/software
 EOF
 
 RUN --mount=type=cache,target=/spack-buildcache ./dostarenv.sh star-loose
