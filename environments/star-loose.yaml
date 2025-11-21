@@ -7,9 +7,12 @@ spack:
     - $spack/../environments/packages.yaml
     - $spack/../environments/modules.yaml
     - $spack/../environments/concretizer.yaml
+  config:
+    build_stage:
+      - $spack/var/spack/stage
   specs:
     - catch2
-    - ccache
+    - ccache ^zstd+programs
     - cmake
     - git
     - python@2.7 ^libffi@3.2.1

@@ -1,12 +1,11 @@
-# This is a Spack Environment file.
-#
-# It describes a set of packages to be installed, along with
-# configuration settings.
 spack:
   include:
     - $spack/../environments/packages.yaml
     - $spack/../environments/modules.yaml
     - $spack/../environments/concretizer.yaml
+  config:
+    build_stage:
+      - $spack/var/spack/stage
   specs:
     - boost
     - eigen
