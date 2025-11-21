@@ -36,8 +36,7 @@ RUN yum install -y devtoolset-11 \
 
 FROM ${compiler}-prep-stage AS build-stage
 
-# The shell command allows to pick up the changes in /etc/bashrc
-SHELL ["/bin/bash", "--login", "-c"]
+SHELL ["/bin/bash", "-l", "-c"]
 
 RUN yum install -y lapack-static blas-static imake motif-devel
 
@@ -53,6 +52,7 @@ RUN mkdir /cern && cd /cern \
 COPY . /star-spack
 
 RUN mkdir -p /star-spack/spack && curl -sL https://github.com/spack/spack/archive/v0.18.1.tar.gz | tar -xz --strip-components 1 -C /star-spack/spack
+RUN echo "[ -f /star-spack/setup.sh ] && source /star-spack/setup.sh" > /etc/profile.d/z09_setup_spack.sh
 
 ARG starenv
 
@@ -61,7 +61,6 @@ RUN mkdir -p /spack-buildcache
 COPY --chmod=0755 <<-"EOF" dostarenv.sh
 	#!/bin/bash -l
 	set -e
-	source /star-spack/setup.sh
 	spack compiler add $(dirname $(which gcc))
 	spack mirror add --scope site spack-buildcache file:///spack-buildcache || true
 	spack mirror list
@@ -84,7 +83,6 @@ RUN --mount=type=cache,target=/spack-buildcache ./dostarenv.sh star-loose
 RUN --mount=type=cache,target=/spack-buildcache ./dostarenv.sh ${starenv}
 # Load only the umbrella star-env module
 RUN <<-EOF
-	source /star-spack/setup.sh
 	spack -e ${starenv} module tcl loads star-env >> /star-spack/spack/var/spack/environments/${starenv}/loads
 EOF
 
@@ -101,8 +99,10 @@ FROM ${baseimg_os} AS starenv-stage
 ARG starenv
 ARG compiler
 
+SHELL ["/bin/bash", "-l", "-c"]
+
 COPY --from=build-stage /cern /cern
-COPY --from=build-stage /etc/bashrc /etc/bashrc
+COPY --from=build-stage /etc/profile.d /etc/profile.d
 COPY --from=build-stage /opt/software /opt/software
 COPY --from=build-stage /star-spack/spack/var/spack/environments/${starenv}/loads /etc/profile.d/z10_load_spack_env_modules.sh
 COPY --from=build-stage /star-spack/spack/share/spack/modules/linux-scientific7-x86_64_v3 /opt/linux-scientific7-x86_64
@@ -131,8 +131,7 @@ ENV LIBPATH+=:/lib64:/lib
 # Empty dummy directories checked by cons
 RUN mkdir $OPTSTAR/lib && mkdir $OPTSTAR/include
 # Some STAR packages include mysql.h as <mysql/mysql.h>
-RUN source /etc/profile \
- && ln -s `mysql_config --variable=pkgincludedir` /usr/include/mysql
+RUN ln -s $(mysql_config --variable=pkgincludedir) /usr/include/mysql
 
 COPY --chmod=0755 <<-"EOF" /opt/entrypoint.sh
 	#!/bin/bash -l
