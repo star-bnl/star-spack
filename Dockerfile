@@ -76,10 +76,6 @@ EOF
 
 RUN --mount=type=cache,target=/spack-buildcache ./dostarenv.sh star-loose
 RUN --mount=type=cache,target=/spack-buildcache ./dostarenv.sh ${starenv}
-# Load only the umbrella star-env module
-RUN <<-EOF
-	spack -e ${starenv} module tcl loads star-env >> /star-spack/spack/var/spack/environments/${starenv}/loads
-EOF
 
 # Strip all the binaries
 RUN find -L /opt/software/* -type f -exec readlink -f '{}' \; | \
@@ -87,6 +83,9 @@ RUN find -L /opt/software/* -type f -exec readlink -f '{}' \; | \
     grep 'charset=binary' | \
     grep 'x-executable\|x-archive\|x-sharedlib' | \
     awk -F: '{print $1}' | xargs strip -S
+
+# Load only the umbrella star-env module
+RUN spack -e ${starenv} module tcl loads star-env >> /etc/profile.d/z10_load_spack_env_modules.sh
 
 
 FROM ${baseimg_os} AS starenv-stage
@@ -99,7 +98,6 @@ SHELL ["/bin/bash", "-l", "-c"]
 COPY --from=build-stage /cern /cern
 COPY --from=build-stage /etc/profile.d /etc/profile.d
 COPY --from=build-stage /opt/software /opt/software
-COPY --from=build-stage /star-spack/spack/var/spack/environments/${starenv}/loads /etc/profile.d/z10_load_spack_env_modules.sh
 COPY --from=build-stage /star-spack/spack/share/spack/modules/linux-scientific7-x86_64_v3 /opt/linux-scientific7-x86_64
 
 RUN sed -i 's/scientificlinux.org\/linux\/scientific\//scientificlinux.org\/linux\/scientific\/obsolete\//g' /etc/yum.repos.d/*
