@@ -16,9 +16,9 @@ packages:
   eigen:
     version: [3.3.9]
   geant4:
-    version: [10.4.0]
+    version: [10.5.1]
   geant4-vmc:
-    version: [4-0-p3]
+    version: [5-0-p5]
   genfit:
     version: [02-00-00]
     variants: +rave
