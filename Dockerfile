@@ -56,19 +56,20 @@ RUN mkdir -p /star-spack/spack && curl -sL https://github.com/spack/spack/archiv
 
 ARG starenv
 
-COPY --from=ghcr.io/star-bnl/star-spack:buildcache /opt/buildcache /opt/buildcache
+RUN mkdir -p /spack-buildcache
 
 COPY --chmod=0755 <<-"EOF" dostarenv.sh
 	#!/bin/bash -l
 	set -e
 	source /star-spack/setup.sh
-	rm -f $HOME/.spack/mirrors.yaml
 	spack compiler add $(dirname $(which gcc))
-	spack mirror add buildcache /opt/buildcache
-	spack buildcache update-index -d /opt/buildcache
+	spack mirror add --scope site spack-buildcache file:///spack-buildcache || true
+	spack mirror list
+	spack env remove -y ${1} || true
 	spack env create ${1} /star-spack/environments/${1}.yaml
 	spack env activate ${1}
 	spack --insecure install --no-check-signature --reuse
+	spack buildcache create --allow-root --unsigned --force --rebuild-index --directory /spack-buildcache $(spack find --no-groups --format "/{hash}")
 	spack module tcl refresh -y
 	spack env deactivate
 EOF
@@ -79,9 +80,9 @@ config:
     root: /opt/software
 EOF
 
-RUN ./dostarenv.sh star-utils
-RUN ./dostarenv.sh star-x86_64-loose
-RUN ./dostarenv.sh ${starenv}
+RUN --mount=type=cache,target=/spack-buildcache ./dostarenv.sh star-utils
+RUN --mount=type=cache,target=/spack-buildcache ./dostarenv.sh star-x86_64-loose
+RUN --mount=type=cache,target=/spack-buildcache ./dostarenv.sh ${starenv}
 # Load only the umbrella star-env module
 RUN <<-EOF
 	source /star-spack/setup.sh
