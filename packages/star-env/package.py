@@ -6,11 +6,13 @@ class StarEnv(BundlePackage):
 
     homepage = "https://github.com/star-bnl/star-spack/"
 
-    version('0.3.0')
+    version('0.4.0')
 
     depends_on('boost')
     depends_on('eigen')
     depends_on('fastjet')
+    depends_on('geant4', when='root@6.16:')
+    depends_on('geant4-vmc', when='root@6.16:')
     depends_on('genfit')
     depends_on('gsl')
     depends_on('kitrack')
@@ -23,9 +25,12 @@ class StarEnv(BundlePackage):
     depends_on('rave')
     depends_on('root')
     depends_on('vc@0.7.4')
+    depends_on('vmc', when='root@6.16:')
     depends_on('star-table', when='root@6.16:')
     depends_on('zlib')
 
     def setup_run_environment(self, env):
         # Set env variable used by STAR cons
         env.set('USE_64BITS', '0' if self.spec.target == 'x86' else '1')
+        if self.spec['root'].version > Version('6.16.00'):
+            env.prepend_path('CPATH', self.spec['vmc'].prefix.include.vmc)

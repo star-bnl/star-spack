@@ -10,6 +10,8 @@ spack:
     - boost
     - eigen
     - fastjet
+    - geant4
+    - geant4-vmc
     - genfit
     - gsl
     - kfparticle
@@ -19,9 +21,10 @@ spack:
     - mysql
     - rave
     - root@6.24.06 ~vc ~vmc
-    - star-env@0.3.0
+    - star-env@0.4.0
     - star-table@0.1.1
     - vc@0.7.4
+    - vmc
   concretizer:
     unify: true
   packages:
