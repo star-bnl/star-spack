@@ -70,7 +70,7 @@ jobs:
     needs: [envmatrix, build]
     steps:
       - name: Download image artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: star-spack-${{ matrix.starenv }}-${{ matrix.compiler }}
           path: /tmp/
@@ -97,7 +97,7 @@ jobs:
         uses: tj-actions/branch-names@v5.2
 
       - name: Download image artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: star-spack-${{ matrix.starenv }}-${{ matrix.compiler }}
           path: /tmp/
