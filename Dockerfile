@@ -78,12 +78,21 @@ EOF
 RUN --mount=type=cache,id=star-spack-buildcache,target=/spack-buildcache,sharing=locked ./dostarenv.sh star-loose
 RUN --mount=type=cache,id=star-spack-buildcache,target=/spack-buildcache,sharing=locked ./dostarenv.sh ${starenv}
 
-# Strip all the binaries
-RUN find -L /opt/software/* -type f -exec readlink -f '{}' \; | \
-    xargs file -i | \
-    grep 'charset=binary' | \
-    grep 'x-executable\|x-archive\|x-sharedlib' | \
-    awk -F: '{print $1}' | xargs strip -S
+# Reduce the runtime image size while keeping static archives usable for
+# downstream linking.
+RUN find /opt/software -type f -exec sh -c ' \
+    for file do \
+        description=$(file -b "$file"); \
+        case "$description" in \
+            *ELF*"executable"*|*ELF*"shared object"*) \
+                strip --strip-unneeded "$file" \
+                ;; \
+            *"current ar archive"*) \
+                strip --strip-debug "$file" \
+                ;; \
+        esac; \
+    done \
+    ' sh {} +
 
 # Load only the umbrella star-env module
 RUN spack -e ${starenv} module tcl loads star-env >> /etc/profile.d/z10_load_spack_env_modules.sh
