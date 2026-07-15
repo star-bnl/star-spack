@@ -103,13 +103,6 @@ FROM ${baseimg_os} AS starenv-stage
 ARG starenv
 ARG compiler
 
-SHELL ["/bin/bash", "-l", "-c"]
-
-COPY --from=build-stage /cern /cern
-COPY --from=build-stage /etc/profile.d /etc/profile.d
-COPY --from=build-stage /opt/software /opt/software
-COPY --from=build-stage /star-spack/spack/share/spack/modules/linux-scientific7-x86_64 /opt/linux-scientific7-x86_64
-
 RUN sed -i 's/scientificlinux.org\/linux\/scientific\//scientificlinux.org\/linux\/scientific\/obsolete\//g' /etc/yum.repos.d/*
 RUN yum update -q -y \
  && yum install -y \
@@ -120,6 +113,14 @@ RUN yum update -q -y \
     libX11-devel libXext-devel libXpm-devel libXt-devel \
     environment-modules \
  && yum clean all
+
+# Copy the generated activation scripts only after the `module` command is installed
+COPY --from=build-stage /cern /cern
+COPY --from=build-stage /etc/profile.d /etc/profile.d
+COPY --from=build-stage /opt/software /opt/software
+COPY --from=build-stage /star-spack/spack/share/spack/modules/linux-scientific7-x86_64 /opt/linux-scientific7-x86_64
+
+SHELL ["/bin/bash", "-l", "-c"]
 
 ENV MODULEPATH=/opt/linux-scientific7-x86_64
 ENV USE_64BITS=1
