@@ -74,8 +74,8 @@ COPY --chmod=0755 <<-"EOF" dostarenv.sh
 	spack env deactivate
 EOF
 
-RUN --mount=type=cache,target=/spack-buildcache ./dostarenv.sh star-loose
-RUN --mount=type=cache,target=/spack-buildcache ./dostarenv.sh ${starenv}
+RUN --mount=type=cache,id=star-spack-buildcache,target=/spack-buildcache,sharing=locked ./dostarenv.sh star-loose
+RUN --mount=type=cache,id=star-spack-buildcache,target=/spack-buildcache,sharing=locked ./dostarenv.sh ${starenv}
 
 # Strip all the binaries
 RUN find -L /opt/software/* -type f -exec readlink -f '{}' \; | \
