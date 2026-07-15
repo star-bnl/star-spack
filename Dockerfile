@@ -69,7 +69,8 @@ COPY --chmod=0755 <<-"EOF" dostarenv.sh
 	spack env create ${1} /star-spack/environments/${1}.yaml
 	spack env activate ${1}
 	spack --insecure install --no-check-signature || true
-	spack buildcache create --allow-root --unsigned --force --rebuild-index --directory /spack-buildcache $(spack find --no-groups --format "/{hash}")
+	spack buildcache create --allow-root --unsigned --directory /spack-buildcache $(spack find --no-groups --format "/{hash}")
+	spack buildcache update-index --mirror-url file:///spack-buildcache
 	spack module tcl refresh -y
 	spack env deactivate
 EOF
