@@ -15,7 +15,7 @@ jobs:
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
-      - run: echo '::set-output name=matrix::{"starenv":["root5", "root6", "root624"], "compiler":["gcc485", "gcc11"], "exclude":[{"starenv":"root624", "compiler":"gcc485"}]}'
+      - run: echo '::set-output name=matrix::{"starenv":["root5", "root6"], "compiler":["gcc485", "gcc11"]}'
         id: set-matrix
 
   build:
@@ -49,7 +49,7 @@ jobs:
           outputs: type=docker,dest=/tmp/star-spack-${{ matrix.starenv }}-${{ matrix.compiler }}.tar
 
       - name: Upload image artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: star-spack-${{ matrix.starenv }}-${{ matrix.compiler }}
           path: /tmp/star-spack-${{ matrix.starenv }}-${{ matrix.compiler }}.tar
@@ -70,7 +70,7 @@ jobs:
     needs: [envmatrix, build]
     steps:
       - name: Download image artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: star-spack-${{ matrix.starenv }}-${{ matrix.compiler }}
           path: /tmp/
@@ -97,7 +97,7 @@ jobs:
         uses: tj-actions/branch-names@v5.2
 
       - name: Download image artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: star-spack-${{ matrix.starenv }}-${{ matrix.compiler }}
           path: /tmp/
