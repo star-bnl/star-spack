@@ -1,0 +1,43 @@
+name: GHCR Cleanup
+
+# Registry maintenance is intentionally independent of build jobs. Release
+# images are published by tag jobs and rolling caches by successful main jobs.
+on:
+  schedule:
+    # Run every Sunday at 04:37 UTC; an off-peak minute reduces scheduler delays.
+    - cron: '37 4 * * 0'
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: Report eligible images without deleting them
+        required: false
+        default: true
+        type: boolean
+
+# The linked star-spack package grants this repository administrative access.
+# All other GITHUB_TOKEN permissions are disabled by default.
+permissions:
+  packages: write
+
+# Prevent scheduled and manually triggered cleanup runs from racing each other.
+concurrency:
+  group: ghcr-cleanup-star-spack
+  cancel-in-progress: false
+
+jobs:
+  cleanup:
+    name: Delete old untagged images
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Apply GHCR retention policy
+        uses: snok/container-retention-policy@v3
+        with:
+          account: star-bnl
+          token: ${{ secrets.GITHUB_TOKEN }}
+          image-names: star-spack
+          tag-selection: untagged
+          # Leave newly untagged images untouched to avoid racing publication.
+          cut-off: 1d
+          # Scheduled runs clean up; manual runs default to a safe preview.
+          dry-run: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run }}
