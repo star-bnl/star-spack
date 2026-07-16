@@ -41,7 +41,7 @@ packages:
     version: [20.2.1]
   mysql:
     variants: cxxstd=11
-    version: [5.7.27]
+    version: [5.6.43]
   openblas:
     version: [0.3.20]
   rave:

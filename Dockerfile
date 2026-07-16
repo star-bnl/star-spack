@@ -69,20 +69,30 @@ COPY --chmod=0755 <<-"EOF" dostarenv.sh
 	spack env create ${1} /star-spack/environments/${1}.yaml
 	spack env activate ${1}
 	spack --insecure install --no-check-signature || true
-	spack buildcache create --allow-root --unsigned --force --rebuild-index --directory /spack-buildcache $(spack find --no-groups --format "/{hash}")
+	spack buildcache create --allow-root --unsigned --directory /spack-buildcache $(spack find --no-groups --format "/{hash}")
+	spack buildcache update-index --mirror-url file:///spack-buildcache
 	spack module tcl refresh -y
 	spack env deactivate
 EOF
 
-RUN --mount=type=cache,target=/spack-buildcache ./dostarenv.sh star-loose
-RUN --mount=type=cache,target=/spack-buildcache ./dostarenv.sh ${starenv}
+RUN --mount=type=cache,id=star-spack-buildcache,target=/spack-buildcache,sharing=locked ./dostarenv.sh star-loose
+RUN --mount=type=cache,id=star-spack-buildcache,target=/spack-buildcache,sharing=locked ./dostarenv.sh ${starenv}
 
-# Strip all the binaries
-RUN find -L /opt/software/* -type f -exec readlink -f '{}' \; | \
-    xargs file -i | \
-    grep 'charset=binary' | \
-    grep 'x-executable\|x-archive\|x-sharedlib' | \
-    awk -F: '{print $1}' | xargs strip -S
+# Reduce the runtime image size while keeping static archives usable for
+# downstream linking.
+RUN find /opt/software -type f -exec sh -c ' \
+    for file do \
+        description=$(file -b "$file"); \
+        case "$description" in \
+            *ELF*"executable"*|*ELF*"shared object"*) \
+                strip --strip-unneeded "$file" \
+                ;; \
+            *"current ar archive"*) \
+                strip --strip-debug "$file" \
+                ;; \
+        esac; \
+    done \
+    ' sh {} +
 
 # Load only the umbrella star-env module
 RUN spack -e ${starenv} module tcl loads star-env >> /etc/profile.d/z10_load_spack_env_modules.sh
@@ -92,13 +102,6 @@ FROM ${baseimg_os} AS starenv-stage
 
 ARG starenv
 ARG compiler
-
-SHELL ["/bin/bash", "-l", "-c"]
-
-COPY --from=build-stage /cern /cern
-COPY --from=build-stage /etc/profile.d /etc/profile.d
-COPY --from=build-stage /opt/software /opt/software
-COPY --from=build-stage /star-spack/spack/share/spack/modules/linux-scientific7-x86_64 /opt/linux-scientific7-x86_64
 
 RUN sed -i 's/scientificlinux.org\/linux\/scientific\//scientificlinux.org\/linux\/scientific\/obsolete\//g' /etc/yum.repos.d/*
 RUN yum update -q -y \
@@ -110,6 +113,14 @@ RUN yum update -q -y \
     libX11-devel libXext-devel libXpm-devel libXt-devel \
     environment-modules \
  && yum clean all
+
+# Copy the generated activation scripts only after the `module` command is installed
+COPY --from=build-stage /cern /cern
+COPY --from=build-stage /etc/profile.d /etc/profile.d
+COPY --from=build-stage /opt/software /opt/software
+COPY --from=build-stage /star-spack/spack/share/spack/modules/linux-scientific7-x86_64 /opt/linux-scientific7-x86_64
+
+SHELL ["/bin/bash", "-l", "-c"]
 
 ENV MODULEPATH=/opt/linux-scientific7-x86_64
 ENV USE_64BITS=1
