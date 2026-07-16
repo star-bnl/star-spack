@@ -15,7 +15,7 @@ jobs:
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
-      - run: echo '::set-output name=matrix::{"starenv":["root5", "root6"], "compiler":["gcc485", "gcc11"]}'
+      - run: echo 'matrix={"starenv":["root5","root6"],"compiler":["gcc485","gcc11"]}' >> "$GITHUB_OUTPUT"
         id: set-matrix
 
   build:
@@ -26,20 +26,20 @@ jobs:
       matrix: ${{ fromJSON(needs.envmatrix.outputs.matrix) }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v5
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
+        uses: docker/setup-buildx-action@v3
 
       - name: Login to GitHub container registry
-        uses: docker/login-action@v2
+        uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build container
-        uses: docker/build-push-action@v3
+        uses: docker/build-push-action@v6
         with:
           context: .
           build-args: |
@@ -59,7 +59,7 @@ jobs:
     needs: build
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v5
       - run: .github/workflows/delete_untagged.py ${{ secrets.STAR_SPACK_TOKEN }}
 
   test:
