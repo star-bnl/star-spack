@@ -11,7 +11,7 @@ ARG baseimg_os=scientificlinux/sl:7
 FROM ${baseimg_os} AS base-stage
 
 RUN sed -i 's/scientificlinux.org\/linux\/scientific\//scientificlinux.org\/linux\/scientific\/obsolete\//g' /etc/yum.repos.d/*
-RUN yum install -y git unzip make patch perl perl-Data-Dumper
+RUN yum install -y git unzip make patch perl perl-Data-Dumper file
 
 
 # Install gcc485 (default)
@@ -68,7 +68,7 @@ COPY --chmod=0755 <<-"EOF" dostarenv.sh
 	spack env remove -y ${1} || true
 	spack env create ${1} /star-spack/environments/${1}.yaml
 	spack env activate ${1}
-	spack --insecure install --no-check-signature || true
+	spack --insecure install --no-check-signature --reuse
 	spack buildcache create --allow-root --unsigned --directory /spack-buildcache $(spack find --no-groups --format "/{hash}")
 	spack buildcache update-index --mirror-url file:///spack-buildcache
 	spack module tcl refresh -y
