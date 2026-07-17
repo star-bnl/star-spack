@@ -68,8 +68,10 @@ In CI, every runtime build uses the default cache-first mode with source
 fallback. Pull requests build and test all environment/compiler combinations
 without stripping the runtime files and do not publish images or the local
 mirror. Pushes to `main` perform the size optimization, publish
-`latest-<env>-<compiler>` images, and update the shared mirror. The main jobs
-run their matrix sequentially so each consumes the mirror published by the
-previous matrix entry. Tags also perform the size optimization and publish
-`<tag>-<env>-<compiler>` images, but do not publish the local mirror. The
-ordinary `buildkit-cache-<env>-<compiler>` registry caches remain separate.
+`latest-<env>-<compiler>` images in parallel, but do not update either cache.
+Tags also perform the size optimization and publish `<tag>-<env>-<compiler>`
+images without updating the caches. Run the `Update Spack Buildcache` workflow
+manually when package or environment changes require a refresh. Its matrix runs
+sequentially so each entry consumes the shared mirror published by the previous
+entry, and it also updates the separate
+`buildkit-cache-<env>-<compiler>` registry caches.

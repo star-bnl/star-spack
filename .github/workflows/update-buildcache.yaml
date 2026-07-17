@@ -1,24 +1,23 @@
-name: Main Push Build
+name: Update Spack Buildcache
 
 on:
-  push:
-    branches:
-      - main
+  workflow_dispatch:
 
 permissions:
   contents: read
   packages: write
 
-# A newer push supersedes and cancels any in-progress run so only the latest
-# main commit continues publishing images.
+# Cache refreshes update one shared Spack mirror and must not overlap.
 concurrency:
-  group: push-main
-  cancel-in-progress: true
+  group: spack-buildcache
+  cancel-in-progress: false
 
 jobs:
   build:
     name: build-${{ matrix.starenv }}-${{ matrix.compiler }}
     strategy:
+      # Each build consumes the mirror published by the preceding matrix entry.
+      max-parallel: 1
       matrix:
         starenv: [root5, root6]
         compiler: [gcc485, gcc11]
@@ -26,5 +25,5 @@ jobs:
     with:
       starenv: ${{ matrix.starenv }}
       compiler: ${{ matrix.compiler }}
-      optimize-runtime: true
-      image-tag: latest
+      optimize-runtime: false
+      publish-buildcache: true
