@@ -8,10 +8,16 @@ spack:
       - $spack/var/spack/stage
   specs:
     - boost
+    - clhep
     - eigen
     - fastjet
+    - geant3
     - geant4
     - geant4-vmc
+    - g4ensdfstate@2.2
+    - g4neutronxs@1.4
+    - g4photonevaporation@5.3
+    - g4saiddata@2.0
     - genfit
     - gsl
     - kitrack

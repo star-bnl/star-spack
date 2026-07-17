@@ -9,6 +9,7 @@ class StarEnv(BundlePackage):
     version('0.4.0')
 
     depends_on('boost')
+    depends_on('clhep')
     depends_on('eigen')
     depends_on('fastjet')
     depends_on('geant4', when='^root@6.16:')

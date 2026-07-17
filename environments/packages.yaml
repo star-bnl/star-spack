@@ -9,12 +9,16 @@ packages:
     version: [2.13.8]
   ccache:
     version: [4.3]
+  clhep:
+    version: [2.4.5.1]
   cmake:
     version: [3.23.1]
   davix:
     version: [0.7.5]
   eigen:
     version: [3.3.9]
+  geant3:
+    version: [3-9-p1]
   geant4:
     version: [10.5.1]
   geant4-vmc:
