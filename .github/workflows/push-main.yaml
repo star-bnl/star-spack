@@ -1,0 +1,33 @@
+name: Main Push Build
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+  packages: write
+
+# Main updates one shared Spack mirror. A newer push supersedes and cancels any
+# in-progress run so only the latest main commit continues publishing updates.
+concurrency:
+  group: spack-buildcache
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: build-${{ matrix.starenv }}-${{ matrix.compiler }}
+    strategy:
+      # Each build consumes the shared mirror published by the preceding build.
+      max-parallel: 1
+      matrix:
+        starenv: [root5, root6]
+        compiler: [gcc485, gcc11]
+    uses: ./.github/workflows/build.yaml
+    with:
+      starenv: ${{ matrix.starenv }}
+      compiler: ${{ matrix.compiler }}
+      optimize-runtime: true
+      image-tag: latest
+      publish-buildcache: true

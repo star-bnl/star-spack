@@ -1,7 +1,7 @@
 name: GHCR Cleanup
 
-# Registry maintenance is intentionally independent of build jobs. Release
-# images are published by tag jobs and rolling caches by successful main jobs.
+# Registry maintenance is intentionally independent of build jobs. Versioned
+# images are published by tags; latest images and rolling caches come from main.
 on:
   schedule:
     # Run every Sunday at 04:37 UTC; an off-peak minute reduces scheduler delays.

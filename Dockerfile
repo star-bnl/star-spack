@@ -118,22 +118,25 @@ FROM spack-build-stage AS build-stage
 SHELL ["/bin/bash", "-l", "-c"]
 
 ARG starenv
+ARG optimize_runtime=true
 
 # Reduce the runtime image size while keeping static archives usable for
-# downstream linking.
-RUN find /opt/software -type f -exec sh -c ' \
-    for file do \
-        description=$(file -b "$file"); \
-        case "$description" in \
-            *ELF*"executable"*|*ELF*"shared object"*) \
-                strip --strip-unneeded "$file" \
-                ;; \
-            *"current ar archive"*) \
-                strip --strip-debug "$file" \
-                ;; \
-        esac; \
-    done \
-    ' sh {} +
+# downstream linking. Pull-request builds disable this expensive optimization.
+RUN if [[ "${optimize_runtime}" == true ]]; then \
+        find /opt/software -type f -exec sh -c ' \
+        for file do \
+            description=$(file -b "$file"); \
+            case "$description" in \
+                *ELF*"executable"*|*ELF*"shared object"*) \
+                    strip --strip-unneeded "$file" \
+                    ;; \
+                *"current ar archive"*) \
+                    strip --strip-debug "$file" \
+                    ;; \
+            esac; \
+        done \
+        ' sh {} +; \
+    fi
 
 # Load only the umbrella star-env module
 RUN spack -e ${starenv} module tcl loads star-env >> /etc/profile.d/z10_load_spack_env_modules.sh
