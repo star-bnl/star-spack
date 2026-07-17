@@ -31,7 +31,7 @@ jobs:
     timeout-minutes: 15
     steps:
       - name: Apply GHCR retention policy
-        uses: snok/container-retention-policy@v3
+        uses: snok/container-retention-policy@v3.1.0
         with:
           account: star-bnl
           token: ${{ secrets.GITHUB_TOKEN }}
