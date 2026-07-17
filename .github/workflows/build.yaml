@@ -1,0 +1,97 @@
+name: Build container
+
+on:
+  workflow_call:
+    inputs:
+      starenv:
+        description: STAR environment to build
+        required: true
+        type: string
+      compiler:
+        description: Compiler toolchain to build with
+        required: true
+        type: string
+      optimize-runtime:
+        description: Strip runtime binaries and libraries to reduce image size
+        required: false
+        default: true
+        type: boolean
+      image-tag:
+        description: Image tag prefix to publish; leave empty for read-only builds
+        required: false
+        default: ''
+        type: string
+      publish-buildcache:
+        description: Publish the updated shared Spack buildcache
+        required: false
+        default: false
+        type: boolean
+
+jobs:
+  build:
+    name: build-${{ inputs.starenv }}-${{ inputs.compiler }}
+    runs-on: ubuntu-latest
+    env:
+      IMAGE_TAG: star-spack:${{ inputs.starenv }}-${{ inputs.compiler }}
+      SPACK_CACHE_REF: ghcr.io/star-bnl/star-spack:spack-buildcache
+      BUILDKIT_CACHE_REF: ghcr.io/star-bnl/star-spack:buildkit-cache-${{ inputs.starenv }}-${{ inputs.compiler }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v4
+
+      - name: Login to GitHub container registry
+        if: inputs.image-tag != '' || inputs.publish-buildcache
+        uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ github.token }}
+
+      - name: Build container
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          target: starenv-stage
+          build-args: |
+            starenv=${{ inputs.starenv }}
+            compiler=${{ inputs.compiler }}
+            spack_cache_image=${{ env.SPACK_CACHE_REF }}
+            optimize_runtime=${{ inputs.optimize-runtime }}
+          tags: ${{ env.IMAGE_TAG }}
+          load: true
+          cache-from: type=registry,ref=${{ env.BUILDKIT_CACHE_REF }}
+
+      - name: Test container
+        shell: bash
+        run: |
+          docker run --rm "$IMAGE_TAG" modulecmd bash avail
+          docker run --rm "$IMAGE_TAG" /bin/bash -c 'test ! -e /spack-buildcache && test ! -e /spack-buildcache-export'
+
+      - name: Publish container image
+        if: inputs.image-tag != ''
+        env:
+          PUBLISH_TAG: ghcr.io/star-bnl/star-spack:${{ inputs.image-tag }}-${{ inputs.starenv }}-${{ inputs.compiler }}
+        run: |
+          docker tag "$IMAGE_TAG" "$PUBLISH_TAG"
+          docker push "$PUBLISH_TAG"
+
+      - name: Publish rolling caches
+        if: inputs.publish-buildcache
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          target: spack-buildcache
+          build-args: |
+            starenv=${{ inputs.starenv }}
+            compiler=${{ inputs.compiler }}
+            spack_cache_image=${{ env.SPACK_CACHE_REF }}
+            rebuild_spack_buildcache=true
+            spack_cache_export_revision=${{ github.sha }}
+          tags: ${{ env.SPACK_CACHE_REF }}
+          push: true
+          provenance: false
+          cache-from: type=registry,ref=${{ env.BUILDKIT_CACHE_REF }}
+          cache-to: type=registry,ref=${{ env.BUILDKIT_CACHE_REF }},mode=max

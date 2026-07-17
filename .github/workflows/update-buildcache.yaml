@@ -1,0 +1,29 @@
+name: Update Spack Buildcache
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+# Cache refreshes update one shared Spack mirror and must not overlap.
+concurrency:
+  group: spack-buildcache
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: build-${{ matrix.starenv }}-${{ matrix.compiler }}
+    strategy:
+      # Each build consumes the mirror published by the preceding matrix entry.
+      max-parallel: 1
+      matrix:
+        starenv: [root5, root6]
+        compiler: [gcc485, gcc11]
+    uses: ./.github/workflows/build.yaml
+    with:
+      starenv: ${{ matrix.starenv }}
+      compiler: ${{ matrix.compiler }}
+      optimize-runtime: false
+      publish-buildcache: true

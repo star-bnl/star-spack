@@ -22,6 +22,10 @@ docker build \
   .
 ```
 
+Runtime binaries and libraries are stripped by default to minimize the final
+image. For a faster validation build that does not optimize image size, add
+`--build-arg optimize_runtime=false`.
+
 To consume another compatible mirror image, override
 `spack_cache_image=<image>`. The image must provide
 `/opt/spack-buildcache/build_cache/index.json` and its referenced package
@@ -61,8 +65,13 @@ For the one-time creation of a cache when no prior image exists, add:
 ```
 
 In CI, every runtime build uses the default cache-first mode with source
-fallback. Only `main` subsequently runs the export mode and updates the shared
-mirror. Its matrix jobs run sequentially so each job consumes the mirror
-published by the previous job. Pull requests and tags do not publish the local
-mirror. The ordinary `buildkit-cache-<env>-<compiler>` registry caches remain
-separate.
+fallback. Pull requests build and test all environment/compiler combinations
+without stripping the runtime files and do not publish images or the local
+mirror. Pushes to `main` perform the size optimization, publish
+`latest-<env>-<compiler>` images in parallel, but do not update either cache.
+Tags also perform the size optimization and publish `<tag>-<env>-<compiler>`
+images without updating the caches. Run the `Update Spack Buildcache` workflow
+manually when package or environment changes require a refresh. Its matrix runs
+sequentially so each entry consumes the shared mirror published by the previous
+entry, and it also updates the separate
+`buildkit-cache-<env>-<compiler>` registry caches.
