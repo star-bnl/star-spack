@@ -9,13 +9,24 @@ on:
       - '*'
   pull_request:
 
+permissions:
+  contents: read
+  packages: write
+
+# Main updates one shared Spack mirror, so main workflow runs must not overlap.
+# Runs for the same PR share a group so a new commit cancels the older run.
+# Other events get a run-specific group and remain independent.
+concurrency:
+  group: ${{ github.ref == 'refs/heads/main' && 'spack-buildcache' || github.event_name == 'pull_request' && format('{0}-pr-{1}', github.workflow, github.event.pull_request.number) || format('ci-{0}', github.run_id) }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
   envmatrix:
     runs-on: ubuntu-latest
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
-      - run: echo '::set-output name=matrix::{"starenv":["root5", "root6"], "compiler":["gcc485", "gcc11"]}'
+      - run: echo 'matrix={"starenv":["root5","root6"],"compiler":["gcc485","gcc11"]}' >> "$GITHUB_OUTPUT"
         id: set-matrix
 
   build:
@@ -23,86 +34,70 @@ jobs:
     name: build-${{ matrix.starenv }}-${{ matrix.compiler }}
     needs: envmatrix
     strategy:
+      # Main jobs update one mutable mirror and must consume the cache published
+      # by the preceding matrix job. Read-only builds can still run in parallel.
+      max-parallel: ${{ github.ref == 'refs/heads/main' && 1 || 4 }}
       matrix: ${{ fromJSON(needs.envmatrix.outputs.matrix) }}
+    env:
+      IMAGE_TAG: star-spack:${{ matrix.starenv }}-${{ matrix.compiler }}
+      SPACK_CACHE_REF: ghcr.io/star-bnl/star-spack:spack-buildcache
+      BUILDKIT_CACHE_REF: ghcr.io/star-bnl/star-spack:buildkit-cache-${{ matrix.starenv }}-${{ matrix.compiler }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v7
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
+        uses: docker/setup-buildx-action@v4
 
       - name: Login to GitHub container registry
-        uses: docker/login-action@v2
+        if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/'))
+        uses: docker/login-action@v4
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build container
-        uses: docker/build-push-action@v3
+        uses: docker/build-push-action@v7
         with:
           context: .
+          target: starenv-stage
           build-args: |
             starenv=${{ matrix.starenv }}
             compiler=${{ matrix.compiler }}
-          tags: star-spack
-          outputs: type=docker,dest=/tmp/star-spack-${{ matrix.starenv }}-${{ matrix.compiler }}.tar
+            spack_cache_image=${{ env.SPACK_CACHE_REF }}
+          tags: ${{ env.IMAGE_TAG }}
+          load: true
+          cache-from: type=registry,ref=${{ env.BUILDKIT_CACHE_REF }}
 
-      - name: Upload image artifact
-        uses: actions/upload-artifact@v4
+      - name: Test container
+        shell: bash
+        run: |
+          docker run --rm "$IMAGE_TAG" modulecmd bash avail
+          docker run --rm "$IMAGE_TAG" /bin/bash -c 'test ! -e /spack-buildcache && test ! -e /spack-buildcache-export'
+
+      - name: Publish release image
+        if: startsWith(github.ref, 'refs/tags/')
+        env:
+          RELEASE_TAG: ghcr.io/star-bnl/star-spack:${{ github.ref_name }}-${{ matrix.starenv }}-${{ matrix.compiler }}
+        run: |
+          docker tag "$IMAGE_TAG" "$RELEASE_TAG"
+          docker push "$RELEASE_TAG"
+
+      - name: Publish rolling caches
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: docker/build-push-action@v3
         with:
-          name: star-spack-${{ matrix.starenv }}-${{ matrix.compiler }}
-          path: /tmp/star-spack-${{ matrix.starenv }}-${{ matrix.compiler }}.tar
-
-  build-cleanup:
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-      - run: .github/workflows/delete_untagged.py ${{ secrets.STAR_SPACK_TOKEN }}
-
-  test:
-    runs-on: ubuntu-latest
-    name: test-${{ matrix.starenv }}-${{ matrix.compiler }}
-    strategy:
-      matrix: ${{ fromJSON(needs.envmatrix.outputs.matrix) }}
-    needs: [envmatrix, build]
-    steps:
-      - name: Download image artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: star-spack-${{ matrix.starenv }}-${{ matrix.compiler }}
-          path: /tmp/
-
-      - run: docker load --input /tmp/star-spack-${{ matrix.starenv }}-${{ matrix.compiler }}.tar
-      - run: docker run star-spack modulecmd bash avail
-
-  tag:
-    if: startsWith(github.ref, 'refs/tags/')
-    runs-on: ubuntu-latest
-    strategy:
-      matrix: ${{ fromJSON(needs.envmatrix.outputs.matrix) }}
-    needs: [envmatrix, test]
-    steps:
-      - name: Login to GitHub container registry
-        uses: docker/login-action@v2
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Get branch name
-        id: branch-name
-        uses: tj-actions/branch-names@v5.2
-
-      - name: Download image artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: star-spack-${{ matrix.starenv }}-${{ matrix.compiler }}
-          path: /tmp/
-
-      - run: echo "REFTAG=${{ steps.branch-name.outputs.current_branch }}-${{ matrix.starenv }}-${{ matrix.compiler }}" >> $GITHUB_ENV
-      - run: docker load --input /tmp/star-spack-${{ matrix.starenv }}-${{ matrix.compiler }}.tar
-      - run: docker tag star-spack ghcr.io/star-bnl/star-spack:${REFTAG}
-      - run: docker push ghcr.io/star-bnl/star-spack:${REFTAG}
+          context: .
+          target: spack-buildcache
+          build-args: |
+            starenv=${{ matrix.starenv }}
+            compiler=${{ matrix.compiler }}
+            spack_cache_image=${{ env.SPACK_CACHE_REF }}
+            rebuild_spack_buildcache=true
+            spack_cache_export_revision=${{ github.sha }}
+          tags: ${{ env.SPACK_CACHE_REF }}
+          push: true
+          provenance: false
+          cache-from: type=registry,ref=${{ env.BUILDKIT_CACHE_REF }}
+          cache-to: type=registry,ref=${{ env.BUILDKIT_CACHE_REF }},mode=max
