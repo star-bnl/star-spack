@@ -7,6 +7,21 @@ ARG compiler=gcc485
 
 ARG baseimg_os=scientificlinux/sl:7
 
+# Normal builds require this image to provide /opt/spack-buildcache. Override
+# it only to consume another compatible mirror image.
+ARG spack_cache_image=ghcr.io/star-bnl/star-spack:spack-buildcache
+
+# Set this to true only when exporting an updated shared buildcache image.
+# It does not change the installation steps, so an export can reuse the layers
+# produced by a preceding normal build.
+ARG rebuild_spack_buildcache=false
+
+# The local fallback and the GHCR image expose the same path.
+FROM ${baseimg_os} AS spack-cache-empty-stage
+RUN mkdir -p /opt/spack-buildcache
+
+FROM ${spack_cache_image} AS spack-cache-seed-stage
+
 # Install common packages
 FROM ${baseimg_os} AS base-stage
 
@@ -34,7 +49,7 @@ RUN yum install -y devtoolset-11 \
  && echo "source /opt/rh/devtoolset-11/enable" >> /etc/profile.d/z01_setup_compiler.sh
 
 
-FROM ${compiler}-prep-stage AS build-stage
+FROM ${compiler}-prep-stage AS spack-build-stage
 
 SHELL ["/bin/bash", "-l", "-c"]
 
@@ -49,34 +64,60 @@ RUN mkdir /cern && cd /cern \
  && ln -s 2006 /cern/pro \
  && rm -fr /cern/2006/src /cern/2006/build
 
-COPY . /star-spack
-
 RUN mkdir -p /star-spack/spack && curl -sL https://github.com/spack/spack/archive/v0.18.1.tar.gz | tar -xz --strip-components 1 -C /star-spack/spack
+
+# Copy only inputs that affect concretization or package builds. In particular,
+# README and workflow-only changes should not invalidate the Spack layers.
+COPY repo.yaml setup.sh setup.csh /star-spack/
+COPY environments /star-spack/environments
+COPY packages /star-spack/packages
+
 RUN echo "[ -f /star-spack/setup.sh ] && source /star-spack/setup.sh" > /etc/profile.d/z09_setup_spack.sh
 
 ARG starenv
 
-RUN mkdir -p /spack-buildcache
+COPY --from=spack-cache-seed-stage /opt/spack-buildcache /spack-buildcache-seed
 
 COPY --chmod=0755 <<-"EOF" dostarenv.sh
 	#!/bin/bash -l
 	set -e
+	environment=${1}
+	cache_dir=${2}
 	spack compiler add $(dirname $(which gcc))
-	spack mirror add --scope site spack-buildcache file:///spack-buildcache || true
+	spack mirror add --scope site spack-buildcache "file://${cache_dir}" || true
 	spack mirror list
+	spack buildcache update-index --mirror-url "file://${cache_dir}"
 	spack config add 'config:install_tree:root:/opt/software'
-	spack env remove -y ${1} || true
-	spack env create ${1} /star-spack/environments/${1}.yaml
-	spack env activate ${1}
-	spack --insecure install --no-check-signature --reuse
-	spack buildcache create --allow-root --unsigned --directory /spack-buildcache $(spack find --no-groups --format "/{hash}")
-	spack buildcache update-index --mirror-url file:///spack-buildcache
+	spack env remove -y "${environment}" || true
+	spack env create "${environment}" "/star-spack/environments/${environment}.yaml"
+	spack env activate "${environment}"
+	install_status=0
+	spack --insecure install --no-check-signature --reuse || install_status=$?
+	mapfile -t installed_hashes < <(spack find --no-groups --format "/{hash}")
+	if ((${#installed_hashes[@]})); then
+		spack buildcache create --allow-root --unsigned --rebuild-index --directory "${cache_dir}" "${installed_hashes[@]}"
+	fi
+	if ((install_status)); then
+		spack env deactivate
+		exit "${install_status}"
+	fi
 	spack module tcl refresh -y
 	spack env deactivate
 EOF
 
-RUN --mount=type=cache,id=star-spack-buildcache,target=/spack-buildcache,sharing=locked ./dostarenv.sh star-loose
-RUN --mount=type=cache,id=star-spack-buildcache,target=/spack-buildcache,sharing=locked ./dostarenv.sh ${starenv}
+RUN --mount=type=cache,id=star-spack-buildcache,target=/spack-buildcache,sharing=locked \
+	cp -an /spack-buildcache-seed/. /spack-buildcache/ \
+ && ./dostarenv.sh star-loose /spack-buildcache
+RUN --mount=type=cache,id=star-spack-buildcache,target=/spack-buildcache,sharing=locked \
+	cp -an /spack-buildcache-seed/. /spack-buildcache/ \
+ && ./dostarenv.sh ${starenv} /spack-buildcache
+
+
+FROM spack-build-stage AS build-stage
+
+SHELL ["/bin/bash", "-l", "-c"]
+
+ARG starenv
 
 # Reduce the runtime image size while keeping static archives usable for
 # downstream linking.
@@ -96,6 +137,37 @@ RUN find /opt/software -type f -exec sh -c ' \
 
 # Load only the umbrella star-env module
 RUN spack -e ${starenv} module tcl loads star-env >> /etc/profile.d/z10_load_spack_env_modules.sh
+
+
+# Cache mounts are local to a BuildKit builder and cannot be pushed directly.
+# Rebuild mode snapshots the named mount into a normal layer for export. This
+# stage is not part of normal runtime-image builds.
+FROM spack-build-stage AS spack-buildcache-export-stage
+
+SHELL ["/bin/bash", "-l", "-c"]
+
+ARG rebuild_spack_buildcache
+ARG spack_cache_export_revision=local
+
+RUN --mount=type=cache,id=star-spack-buildcache,target=/spack-buildcache,sharing=locked \
+	test "${rebuild_spack_buildcache}" == true \
+ && test -n "${spack_cache_export_revision}" \
+ && cp -an /spack-buildcache-seed/. /spack-buildcache/ \
+ && spack buildcache update-index --mirror-url file:///spack-buildcache \
+ && mapfile -t installed_hashes < <(spack find --no-groups --format "/{hash}") \
+ && if ((${#installed_hashes[@]})); then \
+		spack buildcache create --allow-root --unsigned --rebuild-index --directory /spack-buildcache "${installed_hashes[@]}"; \
+	fi \
+ && rm -rf /spack-buildcache-export \
+ && mkdir -p /spack-buildcache-export \
+ && cp -a /spack-buildcache/. /spack-buildcache-export/
+
+
+# Export only the Spack mirror. Neither this snapshot nor the cache mount is
+# copied into the runtime image below.
+FROM scratch AS spack-buildcache
+
+COPY --from=spack-buildcache-export-stage /spack-buildcache-export /opt/spack-buildcache
 
 
 FROM ${baseimg_os} AS starenv-stage
