@@ -92,7 +92,7 @@ COPY --chmod=0755 <<-"EOF" dostarenv.sh
 	spack env create "${environment}" "/star-spack/environments/${environment}.yaml"
 	spack env activate "${environment}"
 	install_status=0
-	spack --insecure install --no-check-signature --reuse || install_status=$?
+	spack --insecure install --no-check-signature --fresh || install_status=$?
 	mapfile -t installed_hashes < <(spack find --no-groups --format "/{hash}")
 	if ((${#installed_hashes[@]})); then
 		spack buildcache create --allow-root --unsigned --rebuild-index --directory "${cache_dir}" "${installed_hashes[@]}"
